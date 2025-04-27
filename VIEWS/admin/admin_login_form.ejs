@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/PUBLIC/CSS/recruiter_style.css">
+    <link rel="shortcut icon" href="/PUBLIC/ASSETS/IMAGES/favicon.png" type="image/x-icon">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" integrity="sha512-Kc323vGBEqzTmouAECnVceyQqyqdsSiqLQISBL29aUW4U/M7pSPA/gEUZQqv1cwx4OnYxTxve5UMg5GT6L4JJg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <title>Admin Login</title>
+    <style>
+        .admin-form-image-container{
+            background-image: url("/PUBLIC/ASSETS/IMAGES/form_images/admin-wallpaper.jpg");
+            width: 60%;
+            height: 100%;
+            border-top-right-radius: 30px;
+            border-bottom-right-radius: 30px;
+            background-repeat: no-repeat;
+            background-position: center;
+            background-size: cover;
+            box-shadow: rgba(0, 0, 0, 0.2) 0px 12px 28px 0px, rgba(0, 0, 0, 0.1) 0px 2px 4px 0px, rgba(255, 255, 255, 0.05) 0px 0px 0px 1px inset;
+            position: relative;
+            overflow: hidden;
+        }
+        .admin-form-image-container .overlay-div{
+            position: absolute;
+            height: 100%;
+            width: 100%;
+            background-color: #00000010;
+        }
+    </style>
+</head>
+<body>
+    <section class="recruiter-form">
+        <div class=" admin-form-image-container">
+            <div class="overlay-div"></div>
+        </div>
+        <main class="recruiter-form-container">
+            <header class="form-header">
+                <h1>Admin Login</h1>
+                <p>Back to business! Manage applicants, shape careers, and drive growth with Everything.india.</p>
+            </header>
+            <div class="form-box">
+                <form action="/admin/login" method="post">
+                    <div class="input-box">
+                        <input type="text" name="email" id="email" placeholder="E-mail ID">
+                        <i class="fa-solid fa-envelope"></i>
+                    </div>
+                    <div class="input-box">
+                        <input type="password" name="password" id="password" placeholder="Password">
+                        <i class="fa-solid fa-eye-slash" id="password-icon"></i>
+                    </div>
+                    <p class="message"><%= errorMsg %></p>
+                    
+
+                    <button class="form-btn">Login</button>
+
+                </form>
+            </div>
+        </main>
+    </section>
+
+
+    <script>
+        const togglePassword = document.getElementById('password-icon');
+        const password = document.getElementById('password');
+
+        togglePassword.addEventListener('click', function (e) {
+            let type = password.getAttribute('type');
+            if (type === 'password') {
+                password.setAttribute('type', 'text');
+                togglePassword.classList.remove('fa-eye-slash');
+                togglePassword.classList.add('fa-eye');
+            }else{
+                password.setAttribute('type', 'password');
+                togglePassword.classList.remove('fa-eye');
+                togglePassword.classList.add('fa-eye-slash');
+            }
+        });
+    </script>
+</body>
+</html>

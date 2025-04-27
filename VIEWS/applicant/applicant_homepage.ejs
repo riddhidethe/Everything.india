@@ -1,0 +1,303 @@
+  <!DOCTYPE html>
+  <html lang="en">
+    <head>
+      <meta charset="utf-8" />
+      <link rel="icon" href="%PUBLIC_URL%/favicon.ico" />
+      <meta name="viewport" content="width=device-width, initial-scale=1" />
+      <meta name="theme-color" content="#000000" />
+      <meta
+        name="description"
+        content="Web site created using create-react-app"
+      />
+      <link rel="apple-touch-icon" href="%PUBLIC_URL%/logo192.png" />
+      <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
+      <link rel="stylesheet" href="/PUBLIC/CSS/applicant_style.css">
+      <script src="/function/Babel.js"></script>
+      <script src="/function/React.js"></script>
+      <script src="/function/ReactDOM.js"></script>
+
+      <link rel="shortcut icon" href="/PUBLIC/ASSETS/IMAGES/favicon.png" type="image/x-icon">
+
+      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" integrity="sha512-Kc323vGBEqzTmouAECnVceyQqyqdsSiqLQISBL29aUW4U/M7pSPA/gEUZQqv1cwx4OnYxTxve5UMg5GT6L4JJg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+      <title>Everything.india | Home Page</title>
+
+      
+    </head>
+    <body>
+      <!-- header section  -->
+      <header>
+        <div id="header-box">
+          <div class="header-container" id="header">       
+          </div>
+
+          <% if(isLogged != null && isLogged == true) { %>
+          <div class="profile-box">
+            <div class="notification-box" id="notification-bell">
+              <i class="fa-solid fa-bell"></i>
+              <% if(notiResult.length > 0) { %>
+              <div class="notification-indicator"></div>
+              <% } %>
+            </div>
+            
+            <div class="profile-pic-div" id="profile-div">
+              <% if(profilePic == null){ %>
+                <img src="/PUBLIC/ASSETS/IMAGES/user.png" alt="profile-picture">
+              <% }else{ %>
+              <img src="/PUBLIC/ASSETS/UPLOADS/profile_images/<%= profilePic %>" alt="profile-picture">
+              <% } %>
+            </div>
+          </div>
+
+          <div class="dropdown-box hidden" id="drop-box">
+            <ul>
+              <li><a href="/jobSeeker/editprofile">Edit Profile</a></li>
+              <li><a href="/jobSeeker/changePassword">Change Password</a></li>
+              <li class="logout-btn"><a href="/jobSeeker/logout">Logout <i class="fa-solid fa-right-from-bracket"></i></a></li>
+            </ul>
+          </div>
+    
+          <!-- notification area -->
+          <div class="notification-detail-box hidden" id="notification-detail-box">
+            
+            <%if(notiResult.length > 0){%>
+            
+            <ul>
+    
+              <% notiResult.forEach(notification =>{ %>
+                <li class="notification">
+                  <div class="notification-upper notification-slot">
+                    <h3><%= notification.job_role %></h3>
+                    <div class="company-logo-box">
+                      <img src="/PUBLIC/ASSETS/IMAGES/company_logos/<%= notification.company %>.png" alt="company-logo">
+                    </div>
+                  </div>
+                  <div class="notification-lower notification-slot">
+                    <p><span>Status:</span> <%= notification.application_status %></p>
+                    <a href="/jobSeeker/deleteNotification?jobid=<%= notification.job_id %>"><i class="fa-solid fa-trash"></i></a>
+                  </div>
+              </li>
+              <%})%>
+              
+            </ul>
+    
+            <% }else{ %>
+              <h3 class="no-notification">No notifications yet</h3>
+            <% } %>
+          </div>
+          <!-- notification area -->
+
+          <% } else { %>
+            <div class="button-box" id="btn-box">
+              <a class='myBtn' href="/jobSeeker/role_select">Select Role</a>
+            </div>
+          <% } %>
+          
+        </div>
+
+        
+
+      </header>
+      <!-- header section ends here -->
+
+
+      <!-- hero section starts here  -->
+      <section class="heroSection reveal">
+        <div class="heroSectionContentContainer heroContainer">
+          <h1 class="heroSectionTitle">Buy, <span>Sell, Work</span> and Blog</h1>
+        <p class="heroPara">"A unified platform for buying & selling, job hunting, recruitment, and blogging — all in one place."</p>
+        </div>
+        <div class="hero-image-container heroContainer">
+          <img src="/PUBLIC/ASSETS/IMAGES/job_portal_hero.png" alt="" id="hero-image">
+        </div>
+      </section>
+      <!-- hero section ends here  -->
+
+
+      <!-- how we work section starts  -->
+      <section class="howWeWork reveal">
+        <div class="howWeWorkContainer">
+          <div class="howWeWorkTitleBox">
+            <h2>How We Work</h2>
+            <div class="titleUnderLine"></div>
+          </div>
+          <div class="howWeWorkContent">
+            <div class="howWeWorkContentBox">
+              <img src="/PUBLIC/ASSETS/IMAGES/job search.png" alt="JOB-SEARCH-IMAGE">
+            </div>
+            <div class="howWeWorkContentBox">
+              <div class="stepBox">
+                <div class="stepBoxContent">
+                  <div class="stepBoxContentNumber">1</div>
+                  <p>Create Your Account</p>
+                </div>
+                <i class="fa-solid fa-user"></i>
+              </div>
+              <div class="stepBox">
+                <div class="stepBoxContent">
+                  <div class="stepBoxContentNumber">2</div>
+                  <p>Upload Resume</p>
+                </div>
+                <i class="fa-solid fa-file-arrow-up"></i>
+              </div>
+              <div class="stepBox">
+                <div class="stepBoxContent">
+                  <div class="stepBoxContentNumber">3</div>
+                  <p>Find Jobs</p>
+                </div>
+                <i class="fa-solid fa-magnifying-glass"></i>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+      <!-- how we work section starts  -->
+
+
+      <!-- popular jobs section starts here -->
+      <section class="popularJobs reveal">
+        <div class="popularJobsContainer">
+          <div class="popularJobsTitleBox">
+            <h1>Explore Popular Jobs</h1>
+            <p>Unlock Your Potenttial And Discover A World Of Opportunities That Align With Your Skills, Interests, And Aspirations</p>
+          </div>
+          <div class="popularJobsContent">
+            <% r2.forEach(job => { %>
+              <div class="popularJobCard">
+                <div class="othDetails1">
+                  <div class="jobRole" style="color: #333; font-weight: 500;"><%= job.job_role %></div>
+                  <!-- <div class="dueDate"><%= job.due_date %></div> -->
+                </div>
+                <div class="othDetails2">
+                  <div class="loc"><%= job.city %></div>
+                  <div class="jobType"><%= job.job_type %></div>
+                </div>
+                <div class="salary">Rs. <%= job.min_salary %>-<%= job.max_salary %></div>
+                <div class="jobDesc"><%= job.job_desc %></div>
+                <div class="othDetails3">
+                  <div class="compImg">
+                    <img src="/PUBLIC/ASSETS/IMAGES/company_logos/<%=job.company %>.png" alt="company logo">
+                  </div>
+                  <div class="moreDetailsbtn">
+                    <a href="/jobSeeker/jobDetails?jobid=<%= job.job_id %>">View Details</a>
+                  </div>
+                </div>
+              </div>
+            <% }) %>
+          </div>
+          
+
+          <div class="explore">
+            <a href="/jobSeeker/jobList">Explore More</a>
+          </div>
+        </div>
+      </section>
+      <!-- popular jobs section ends here -->
+
+
+      <!-- hiring partners section starts  -->
+      <section class="hiringPartners howWeWork reveal">
+        <div class="howWeWorkContainer">
+          <div class="howWeWorkTitleBox">
+            <h2>Our Hiring Partners</h2>
+            <div class="titleUnderLine"></div>
+          </div>
+          <div class="howWeWorkContent hiringPartnersContent">
+            <div class="company-row reveal">
+              <div class="img_box"><img src="/PUBLIC/ASSETS/IMAGES/company_logos/amazon.png" alt=""></div>
+              <div class="img_box"><img src="/PUBLIC/ASSETS/IMAGES/company_logos/microsoft.png" alt=""></div>
+              <div class="img_box"><img src="/PUBLIC/ASSETS/IMAGES/company_logos/google.png" alt=""></div>
+              <div class="img_box"><img src="/PUBLIC/ASSETS/IMAGES/company_logos/jpmorgan.png" alt=""></div>
+              <div class="img_box"><img src="/PUBLIC/ASSETS/IMAGES/company_logos/deloitte.png" alt=""></div>
+            </div>
+      
+            <div class="company-row reveal">
+              <div class="img_box"><img src="/PUBLIC/ASSETS/IMAGES/company_logos/paypal.png" alt=""></div>
+              <div class="img_box"><img src="/PUBLIC/ASSETS/IMAGES/company_logos/ibm.png" alt=""></div>
+              <div class="img_box"><img src="/PUBLIC/ASSETS/IMAGES/company_logos/samsung.png" alt=""></div>
+              <div class="img_box"><img src="/PUBLIC/ASSETS/IMAGES/company_logos/airtel.png" alt=""></div>
+              <div class="img_box"><img src="/PUBLIC/ASSETS/IMAGES/company_logos/persistant.png" alt=""></div>
+            </div>
+      
+            <div class="company-row reveal">
+              <div class="img_box"><img src="/PUBLIC/ASSETS/IMAGES/company_logos/accenture.png" alt=""></div>
+              <div class="img_box"><img src="/PUBLIC/ASSETS/IMAGES/company_logos/cisco.png" alt=""></div>
+              <div class="img_box"><img src="/PUBLIC/ASSETS/IMAGES/company_logos/tata consultancy services.png" alt=""></div>
+              <div class="img_box"><img src="/PUBLIC/ASSETS/IMAGES/company_logos/infosys.png" alt=""></div>
+              <div class="img_box"><img src="/PUBLIC/ASSETS/IMAGES/company_logos/hcl.png" alt=""></div>
+            </div>
+          </div>
+        </div>
+      </section>
+      <!-- hiring partners section ends  -->
+
+      <% if(toastNotification){ %>
+        <div id="toastBox"></div>
+      <% } %>
+      
+      <footer>
+        <div class="footerContainer" id="footer"></div>
+      </footer>
+
+
+      <script>
+        let toastBox = document.getElementById("toastBox");
+        let toastMsg = '<i class="fa-regular fa-square-check"></i><%=toastNotification%>' ;
+    
+        window.onload = function (msg) {
+          let toast = document.createElement("div");
+          toast.classList.add("toast");
+          toast.innerHTML = toastMsg;
+          toastBox.appendChild(toast);
+          setTimeout(() => {
+            toast.remove();
+          }, 6000);
+        };
+      </script> 
+
+
+      <!-- Embed the data in a script tag -->
+
+      <!-- GSAP library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js" integrity="sha512-7eHRwcbYkK4d9g/6tD/mhkf++eoTHwpNM9woBxtPUBWm67zeAfFC+HrdoE2GanKeocly/VxeLvIqwvCdk7qScg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+      
+      <script src="/PUBLIC/JS/script.js"></script>
+
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js" integrity="sha512-7eHRwcbYkK4d9g/6tD/mhkf++eoTHwpNM9woBxtPUBWm67zeAfFC+HrdoE2GanKeocly/VxeLvIqwvCdk7qScg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+      <script>
+        document.addEventListener('DOMContentLoaded', ()=>{
+        gsap.from('#hero-image', {
+          opacity: 0,
+          x: 50,
+          duration: 1.8,
+          delay: 0.5
+        });
+
+        gsap.from('.heroSectionContentContainer', {
+          opacity: 0,
+          y: 100,
+          duration: 1.8,
+          staggered: 1, delay:0.5
+        });
+        });
+        
+      </script>
+      
+      <script type="text/babel" src="/PUBLIC/COMPONENTS/Footer.js"></script>
+      <script type="text/babel" src="/PUBLIC/COMPONENTS/Header.js"></script>
+
+      <script type="text/babel">
+        
+        ReactDOM.createRoot(document.getElementById('footer')).render(
+          <Footer/>
+        );
+        ReactDOM.createRoot(document.getElementById('header')).render(
+          <Header/>
+        );
+      </script>
+      
+
+
+    </body>
+  </html>

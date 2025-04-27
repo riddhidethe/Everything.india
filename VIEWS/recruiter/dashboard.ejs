@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <script src="/function/Babel.js"></script>
+    <script src="/function/React.js"></script>
+    <script src="/function/ReactDOM.js"></script>
+    <link rel="shortcut icon" href="/PUBLIC/ASSETS/IMAGES/favicon.pngg" type="image/x-icon">
+    <link rel="stylesheet" href="/PUBLIC/css/recruiter_style.css">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" integrity="sha512-Kc323vGBEqzTmouAECnVceyQqyqdsSiqLQISBL29aUW4U/M7pSPA/gEUZQqv1cwx4OnYxTxve5UMg5GT6L4JJg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+
+    <title>Recruiter Dashboard | Everything.india</title>
+</head>
+<body>
+    <section class="recruiter-section">
+        <!-- side navbar -->
+        <nav class="recruiter-navigation" id="sidenavbar"></nav>
+        <!-- side navbar ends -->
+
+        <!-- main content section starts -->
+        <div class="recruiter-main-container">
+            <header class="recruiter-header" id="recruiter_header"></header>
+
+            <!-- content area jaha pain content rhega  -->
+           <!-- Main Content  -->
+            <div class="container">
+                <div class="main">
+                    <div class="cards">
+                        <div class="card">
+                            <div class="card-content">
+                                <div class="number"><%= totalApplications %></div>
+                                <div class="'card-name">No. of Applications</div>
+                            </div>
+                            <div class="icon-box">
+                                <i class="fas fa-users"></i>
+                            </div>
+                        </div>
+                        <div class="card">
+                            <div class="card-content">
+                                <div class="number"><%= pendingApplications %></div>
+                                <div class="'card-name">Non Reviewed Applications</div>
+                            </div>
+                            <div class="icon-box">
+                                <i class="fa-solid fa-file-circle-xmark"></i>
+                            </div>
+                        </div>
+                        <div class="card">
+                            <div class="card-content">
+                                <div class="number"><%= interviewScheduled %></div>
+                                <div class="'card-name">Interviews Scheduled</div>
+                            </div>
+                            <div class="icon-box">
+                                <i class="fas fa-user-clock"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="charts">
+                        <div class="chart">
+                            <h2>Annual Analysis</h2>
+                            <canvas id="barChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+                
+            </div>
+
+            <footer>
+                <div class="footerContainer" id="footer"></div>
+            </footer>
+
+            <% if(toastNotification){ %>
+                <div id="toastBox"></div>
+              <% } %>
+                
+            
+
+        </div>
+        <!-- main content section ends -->
+    </section>
+
+    <script>
+        let toastBox = document.getElementById("toastBox");
+        let toastMsg = '<i class="fa-regular fa-square-check"></i><%=toastNotification%>' ;
+    
+        window.onload = function (msg) {
+          let toast = document.createElement("div");
+          toast.classList.add("toast");
+          toast.innerHTML = toastMsg;
+          toastBox.appendChild(toast);
+          setTimeout(() => {
+            toast.remove();
+          }, 6000);
+        };
+      </script> 
+
+
+    <script type="text/babel" src="/PUBLIC/components/SideNavBar.js"></script>
+    <script type="text/babel" src="/PUBLIC/components/RecruiterHeader.js"></script>
+    <script type="text/babel" src="/PUBLIC/COMPONENTS/RecruiterFooter.js"></script>
+    <script src="/PUBLIC/COMPONENTS/chart1.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <script type="text/babel">
+        const profilePic = "<%= profilePic %>";
+        const username = "<%= username %>";
+        console.log('profile pic val: ' + profilePic);
+        console.log(profilePic);
+        ReactDOM.createRoot(document.getElementById('sidenavbar')).render(
+            <SideNavBar/>
+        );
+
+        ReactDOM.createRoot(document.getElementById('recruiter_header')).render(
+            <RecruiterHeader title='Dashboard' profilePic={profilePic} username = {username} />
+        );
+        ReactDOM.render(<RecruiterFooter />, document.getElementById("footer"));
+    </script>
+    <script>
+        function FetchChartData() {
+            fetch('/jobCreator/charts').then(Response => {
+                return Response.json()
+            }).then(chartData => {
+                const { jobRole, count } = chartData
+                renderChart(jobRole, count)
+            }).catch(error => {
+                console.log(error);
+            })
+        }
+        document.addEventListener('DOMContentLoaded', FetchChartData);
+    </script>
+
+    
+</body>
+</html>

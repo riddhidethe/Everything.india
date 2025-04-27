@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Registration Form</title>
+    <link rel="stylesheet" href="/public/css/style.css">
+    <link rel="shortcut icon" href="/public/assets/images/favicon.png" type="image/x-icon">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" integrity="sha512-Kc323vGBEqzTmouAECnVceyQqyqdsSiqLQISBL29aUW4U/M7pSPA/gEUZQqv1cwx4OnYxTxve5UMg5GT6L4JJg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+</head>
+<body>
+    <div class="container">
+        <div class="formsDiv">
+            <div class="leftContainer formContainer">
+                <img src="/public/assets/images/form_images/completedetail.png" alt="login-img" /> 
+            </div>
+            <div class="rightContainer formContainer">
+                <h1 class='formTitle'>Complete Your Profile</h1>
+                <div class="formBox">
+
+                    <!-- form starts  -->
+                    <form action="/jobSeeker/profileComplete" method="post" enctype="multipart/form-data">
+                        <div class="profilepicbox">
+                            <input type="hidden" name="userRole" value="<%= userRole %>">
+                            <div class="profilePhoto" id="profilePhoto">
+                                <input type="file" name="prof-image" id="fileInput" accept=".jpeg, .jpg" hidden>
+                                <span class="uploadText"><i class="fa-solid fa-circle-plus"></i>
+                                    <p>Upload Photo</p>
+                                </span>
+                            </div>
+                            <div class="formInputContainer">
+                                <div class="formInputBox nameInput">
+                                    <input type="text" placeholder="First Name" name="fname" class='formInput' required/>
+                                </div>
+                                <div class="formInputBox nameInput">
+                                    <input type="text" placeholder="Last Name" name="lname" class='formInput' required/>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="twoInputBox">
+                            <div class="formInputBox expbox">
+                                <input type="number" placeholder="Year of Exp" name="exp" class='formInput' required />
+                            </div>
+                            <div class="formInputBox genderbox">
+                                <input type="text" placeholder="Gender" name="gender" class='formInput' required/>
+                            </div>
+                        </div>
+
+                        <div class="twoInputBox">
+                            <div class="formInputBox agebox">
+                                <input type="number" placeholder="Age" name="age" class='formInput' required />
+                            </div>
+                            <div class="formInputBox numberbox">
+                                <input type="text" placeholder="Phone No." name="phoneno" class='formInput' pattern="\d{10}" minlength="10" maxlength="10"  required/>
+                            </div>
+                        </div>
+
+                        <button class='formButton'>Next</button>
+                    </form>
+                    <!-- form ends  -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        profilePhoto = document.getElementById('profilePhoto'),
+        fileInput = document.getElementById('fileInput'),
+        uploadText = profilePhoto.querySelector('.uploadText');
+
+        profilePhoto.addEventListener('click', () => fileInput.click());
+
+        fileInput.addEventListener('change', handleFile);
+
+        function handleFile(event) {
+            const file = event.target.files[0];
+            if (file) {
+                if (file.size > 1 * 1024 * 1024) {
+                    alert('File size exceeds 1MB.');
+                    fileInput.value = '';
+                    return;
+                }
+                if (!file.type.match('image/jpeg')) {
+                    alert('Only JPEG files are allowed.');
+                    fileInput.value = '';
+                    return;
+                }
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    profilePhoto.style.backgroundImage = `url(${e.target.result})`;
+                    uploadText.style.display = 'none';
+                }
+                reader.readAsDataURL(file);
+            }
+        }
+
+    </script>
+</body>
+</html>

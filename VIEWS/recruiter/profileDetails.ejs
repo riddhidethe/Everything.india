@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <script src="/function/Babel.js"></script>
+    <script src="/function/React.js"></script>
+    <script src="/function/ReactDOM.js"></script>
+    <link rel="shortcut icon" href="/public/assets/images/company_logos/favicon.png" type="image/x-icon">
+    <link rel="stylesheet" href="/public/CSS/recruiter_style.css">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" integrity="sha512-Kc323vGBEqzTmouAECnVceyQqyqdsSiqLQISBL29aUW4U/M7pSPA/gEUZQqv1cwx4OnYxTxve5UMg5GT6L4JJg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+
+    <title>Applicant Details</title>
+</head>
+<body>
+    <section class="recruiter-section">
+        <!-- side navbar -->
+        <nav class="recruiter-navigation" id="sidenavbar"></nav>
+        <!-- side navbar ends -->
+
+        <!-- main content section starts -->
+        <div class="recruiter-main-container">
+            <header class="recruiter-header" id="recruiter_header"></header>
+
+            <!-- Main Content  -->
+                <div class="applicant-content-container">
+                    <div class="applicantDetails">
+                    <form method="post" action="/jobCreator/applicantDetails">
+                        <div class="applicant-grid1">
+                            <span class="applicant">
+                                <h4>First Name</h4>
+                                <input type="text" class="data" value="<%= applicant.first_name %>" readonly>
+                            </span>
+                            <span class="applicant">
+                                <h4>Last Name</h4>
+                                <input type="text" class="data" value="<%= applicant.last_name %>" readonly>
+                            </span>
+                            <span class="applicant">
+                                <h4>Age</h4>
+                                <input type="text" class="data" value="<%= applicant.age %>" readonly>
+                            </span>
+                        </div>
+                        <div class="applicant-grid2">
+                            <span class="applicant">
+                                <h4>Mobile Number</h4>
+                                <input type="text" class="data" value="<%= applicant.mobile_no %>" readonly>
+                            </span>
+                            <span class="applicant">
+                                <h4>Email ID</h4>
+                                <input type="text" class="data_email" value="<%= applicant.email_id %>" readonly>
+                            </span>
+                        </div>
+                        <div class="applicant-grid1">
+                            <span class="applicant">
+                                <h4>Gender</h4>
+                                <input type="text" class="data" value="<%= applicant.gender %>" readonly>
+                            </span>
+                            <span class="applicant">
+                                <h4>Years of Experience</h4>
+                                <input type="text" class="data" value="<%= applicant.exp_level %>" readonly>
+                            </span>
+                            <span class="applicant">
+                                <h4>Job Role Applied</h4>
+                                <input type="text" class="data" name="job_role" value="<%= jobRole %>" readonly>
+                            </span>
+                        </div>
+                        <div class="applicant-grid2">
+                            <span class="applicant">
+                                <h4>Status</h4>
+                                <select name="status" id="status">
+                                    <option value="Select">Change status</option>
+                                    <option value="hired">Hired</option>
+                                    <option value="rejected">Rejected</option>
+                                    <option value="selected for interview">Selected for Interview</option>
+                                    <option value="HR round pending">HR Round Pending</option>
+                                    <option value="interview cleared">Interview Cleared</option>
+                                </select>
+                            </span>
+
+                            <input type="number" name="applicant_id" id="applicant_id" value="<%=applicant.applicant_id%>" hidden>
+                            <input type="number" name="application_id" id="application_id" value="<%=application_id%>" hidden>
+                            <button type="submit">Submit</button>
+                        </div>
+                    </form>
+                </div>
+                    <div class="profileDetails">
+                        <div class="profile">
+                            <div class="cv">
+                                <img src="/public/ASSETS/UPLOADS/profile_images/<%= applicant.profile_pic_code %>" alt="profile_photo">
+                            </div>
+                            <a href="/public/ASSETS/UPLOADS/cv_pdfs/<%= applicant.cv %>">
+                                <button type="submit">View CV</button>
+                            </a>
+                        </div>
+                        <div class="skills">
+                            <span class="applicant">
+                                <h4>Skills</h4>
+                                <div class="applicant-card-row skills-row">
+                                    <% 
+                                        let color = ['#FF5EF9','#00BD40','#FF0000','#0897FF'];
+                                        let i = 0;
+                                        let background = ['rgba(246, 139, 255, 0.12)', 'rgba(0, 189, 64, 0.12)',  'rgba(255, 0, 0, 0.12)', 'rgba(8, 151, 255, 0.12)']
+                                    %>
+                                    <% applicant.skills.split(',').forEach(element => { %>
+                                        <div class="applicant-skill-box" style='color: <%= color[i] %>; border: 2px solid <%= color[i] %>; background-color: <%= background[i] %>;' >
+                                            <%= element %>
+                                        </div>
+                                        <% if (i === 3) { %>
+                                            <% i = 0; %>
+                                        <% } else { %>
+                                            <% i++; %>
+                                        <% } %>
+                                    <% }); %>  
+                                </div>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                <footer>
+                    <div class="footerContainer" id="footer"></div>
+                </footer>
+        </div>
+        <!-- main content section ends -->
+
+    </section>
+    <script type="text/babel" src="/public/components/SideNavBar.js"></script>
+    <script type="text/babel" src="/public/components/RecruiterHeader.js"></script>
+    <script type="text/babel" src="/public/components/RecruiterFooter.js"></script>
+
+    <script type="text/babel">
+        // Ensure profilePic and username are correctly injected
+        const profilePic = "<%= profilePic %>";
+        const username = "<%= username %>";
+    
+        console.log(profilePic);
+    
+        // Rendering the SideNavBar component
+        ReactDOM.createRoot(document.getElementById('sidenavbar')).render(
+            <SideNavBar />
+        );
+    
+        // Rendering the RecruiterHeader component
+        ReactDOM.createRoot(document.getElementById('recruiter_header')).render(
+            <RecruiterHeader title='Applications' profilePic={profilePic} username={username} />
+        );
+
+        ReactDOM.createRoot(document.getElementById('footer')).render(
+            <RecruiterFooter/>
+        )
+    </script>
+    
+</body>
+</html>

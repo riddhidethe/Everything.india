@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <script src="/function/Babel.js"></script>
+    <script src="/function/React.js"></script>
+    <script src="/function/ReactDOM.js"></script>
+    <link rel="shortcut icon" href="/PUBLIC/ASSETS/IMAGES/favicon.png" type="image/x-icon">
+    <link rel="stylesheet" href="/PUBLIC/css/recruiter_style.css">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" integrity="sha512-Kc323vGBEqzTmouAECnVceyQqyqdsSiqLQISBL29aUW4U/M7pSPA/gEUZQqv1cwx4OnYxTxve5UMg5GT6L4JJg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+
+    <script crossorigin src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+
+    <title>Available Applications</title>
+</head>
+<body>
+    <section class="recruiter-section">
+        <!-- side navbar -->
+        <nav class="recruiter-navigation" id="sidenavbar"></nav>
+        <!-- side navbar ends -->
+
+        <!-- main content section starts -->
+        <div class="recruiter-main-container">
+            <header class="recruiter-header" id="recruiter_header"></header>
+
+            <!-- content area jaha pain content rhega  -->
+            <div class="recruiter-application-container" id="application-container"></div>
+
+            <% if(toastNotification){ %>
+                <div id="toastBox"></div>
+              <% } %>
+              
+            <footer>
+                <div class="footerContainer" id="footer"></div>
+            </footer>
+        </div>
+        <!-- main content section ends -->
+    </section>
+
+    <script>
+        let toastBox = document.getElementById("toastBox");
+        let toastMsg = '<i class="fa-regular fa-square-check"></i><%=toastNotification%>' ;
+    
+        window.onload = function (msg) {
+          let toast = document.createElement("div");
+          toast.classList.add("toast");
+          toast.innerHTML = toastMsg;
+          toastBox.appendChild(toast);
+          setTimeout(() => {
+            toast.remove();
+          }, 6000);
+        };
+      </script>
+
+
+    <script type="text/babel" src="/PUBLIC/components/SideNavBar.js"></script>
+    <script type="text/babel" src="/PUBLIC/components/RecruiterHeader.js"></script>
+    <script type="text/babel" src="/PUBLIC/components/RecruiterFooter.js"></script>
+
+    <script type="text/babel">
+
+        const {useState, useEffect} = React;
+
+        function Application(){
+
+            const [applicationList, setApplicationList] = useState([]);
+            const [jobRoleFilter, setJobRoleFilter] = useState('');
+
+            useEffect(()=>{
+                fetchApplicantionList();
+            }, []);
+
+
+            const fetchApplicantionList = () => {
+                axios.get('https://main.everythingstore.in/jobCreator/allSavedApplications').then((response) => {
+                    // console.log('then block mei huuuuuu');
+                    setApplicationList(response.data.rows); 
+                })
+                .catch((error) => {
+                    console.error("Error fetching data:", error);
+                });
+            };
+
+
+            const applyFilters = () =>{
+
+                const jobRole = {job_role: jobRoleFilter};
+
+                // Send POST request to /filters endpoint
+                axios.post('https://main.everythingstore.in/jobCreator/filteredApplications', jobRole)
+                .then(response => {
+                    setApplicationList(response.data.rows);
+                })
+                .catch(error => {
+                    console.error('Error applying filters:', error);
+                });
+            };
+
+
+            const handleJobRoleChange = (event) => {
+                const selectedJobRole = event.target.value;
+                setJobRoleFilter(selectedJobRole);
+            };
+
+            const handleFilterSubmit = (event) => {
+                event.preventDefault();
+                applyFilters();
+            };
+
+
+
+            return(
+                <>   
+                <div className="application-filter-box">
+                    <div className="filter-title-box">
+                        <div className="filter-title">
+                            <i className="fa-solid fa-filter"></i>
+                            <h3>Filter</h3>
+                        </div>
+                    </div>
+
+                    <div className="dropbox_filter">
+                        <select className="sel_box" value={jobRoleFilter} onChange={handleJobRoleChange}>
+                          <option value="">Select a Job Role</option>
+                          <option value="Software Developer">Software Developer</option>
+                          <option value="Web Developer">Web Developer</option>
+                          <option value="Full Stack Developer">Full Stack Developer</option>
+                          <option value="Mobile Developer">Mobile Developer</option>
+                          <option value="Data Scientist">Data Scientist</option>
+                          <option value="Data Analyst">Data Analyst</option>
+                          <option value="Database Administrator">Database Administrator</option>
+                          <option value="Application Tester">System Administrator</option>
+                          <option value="Application Tester">Network Engineer</option>
+                          <option value="Application Tester">Cybersecurity Specialist</option>
+                          <option value="Application Tester">Cloud Engineer</option>
+                          <option value="Application Tester">UI/UX Designer</option>
+                          <option value="Application Tester">Full Stack Developer</option>
+                        </select>
+                    </div>
+                 
+                    <div class="recruiter-filter-btn-box">
+                        <button type="submit" className="filter-btn" onClick={handleFilterSubmit}>Apply</button>
+                        <button type="reset" className="filter-btn close-all-btn">Clear All</button>
+                    </div>
+                    
+                </div>
+
+                {
+                    applicationList.length > 0 ? 
+                    <div className="application-card-container">
+                    {
+                        applicationList.map((application) => (
+                            <div className="application-card">
+                                <div className="applicant-card-row">
+                                    <div className="applicant-name-box">
+                                        <h3>{application.first_name} {application.last_name}</h3>
+                                        <p>{application.job_role}</p>
+                                    </div>
+                                    <a className="save-btn" href={`/jobCreator/unsaveTheApplicationFromSaved?application_id=${application.application_id}&isSaved=${application.isSaved}`}><i className="fa-solid fa-bookmark"></i>  
+                                    </a>                                    
+                                </div>
+
+                                <div className="applicant-card-row skills-row">
+                                    {
+                                        application.skills.split(',').map((skill) => (
+                                            <div className="applicant-skill-box">
+                                                {skill.trim()}
+                                            </div>
+                                        ))
+                                    }
+                                </div>
+
+                                <p className="expField">Exp: <span className="maxExp">{application.exp_level}</span> years</p>
+
+                                <div className="applicant-card-row">
+                                    <a href={`/jobCreator/applicantDetails?applicant_id=${application.applicant_id}&application_id=${application.application_id}&job_role=${application.job_role}`} className="viewDetailsBtn">View Details</a>
+                                    <a className="deleteBtn" href={`/jobCreator/deleteApplication?application_id=${application.application_id}&from=${'saved_application'}`}><i className="fa-solid fa-trash"></i></a>
+                                </div>
+                            </div>
+                        ))
+                    }
+                    
+                </div> : <div className="application-card-container no-application">
+                    <img src="/PUBLIC/ASSETS/IMAGES/No data.png" alt=""/>
+                    <h3>No Application Found</h3>                                        
+                </div>
+                }
+                
+                </>
+            );
+        }
+
+    
+        const profilePic = "<%= profilePic %>";
+        const username = "<%= username %>";
+        console.log(profilePic);
+        ReactDOM.createRoot(document.getElementById('sidenavbar')).render(
+            <SideNavBar/>
+        );
+
+        ReactDOM.createRoot(document.getElementById('recruiter_header')).render(
+            <RecruiterHeader title='Saved Applications' profilePic={profilePic} username = {username} />
+        );
+        ReactDOM.createRoot(document.getElementById('application-container')).render(
+            <Application/>
+        );
+
+        ReactDOM.createRoot(document.getElementById('footer')).render(
+        <RecruiterFooter/>
+    );
+
+    </script>
+</body>
+</html>

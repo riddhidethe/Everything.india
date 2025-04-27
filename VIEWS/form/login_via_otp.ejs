@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>LoginForm</title>
+    <script src="/function/Babel.js"></script>
+    <script src="/function/React.js"></script>
+    <script src="/function/ReactDOM.js"></script>
+    <link rel="stylesheet" href="/public/css/style.css">
+    <link rel="shortcut icon" href="/public/assets/images/favicon.png" type="image/x-icon">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" integrity="sha512-Kc323vGBEqzTmouAECnVceyQqyqdsSiqLQISBL29aUW4U/M7pSPA/gEUZQqv1cwx4OnYxTxve5UMg5GT6L4JJg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+    <style>
+      body{
+          position: relative;
+      }
+      .deactivate-section{
+          position: absolute;
+          height: 100%;
+          width: 100%;
+          top: 0;
+          z-index: 100;
+      }
+      .deactivate-section.hidden{
+          display: none;
+      }
+      .deactivate-container{
+          height: 100vh;
+          background-color: #000000d5;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+      }
+      .deactivate-mssg-box{
+          height: 23rem;
+          width: 22rem;
+          border-radius: 15px;
+          background: #fff;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          position: relative;
+      }
+      .deactivate-mssg-box .close-btn{
+          position: absolute;
+          top: 15px;
+          right: 20px;
+          border-radius: 50%;
+          height: 25px;
+          width: 25px;
+          background: #eee;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          color: #0EB5C4;
+          font-weight: 600;
+          transition: all 0.4s ease;
+          cursor: pointer;
+      }
+      .deactivate-mssg-box .close-btn:hover{
+          background: #333;
+          color: #fff;
+      }
+      .deactivate-mssg-box .deactivate-icon{
+          height: 7rem;
+          width: 7rem;
+          border-radius: 50%;
+          border: 4px solid #0EB5C4;
+          color: #0EB5C4;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-size: 3rem;
+      }
+      .deactivate-mssg-box p{
+          width: 60%;
+          text-align: center;
+          font-size: 13px;
+          font-weight: 500;
+          color: #a9a9a9;
+      }
+      .deactivate-mssg-box h1{
+          color: #333;
+          font-size: 20px;
+          font-weight: 600;
+          margin-top: 25px;
+          margin-bottom: 2px
+      }
+  </style>
+  </head>
+  <body>
+    <div class="container" id="root">
+      <div class="formsDiv">
+        <div class="leftContainer formContainer">
+            <img src="/public/assets/images/form_images/login.png" alt="login-img" /> 
+        </div>
+        <div class="rightContainer formContainer">
+            <h1 class='formTitle'>Welcome Back!</h1>
+            <div class="formBox">
+                <form action="/jobSeeker/login_via_otp" method="post">
+                    <div class="formInputBox">
+                        <input type="email" placeholder="Email Id" name = 'emailID' class='formInput' required/>
+                        <i class="fa-solid fa-envelope formIcons"></i>
+                    </div>
+                    <span style="color: red;"><%= errorMsg %></span>
+                    <button class='formButton'>Send OTP</button>
+                </form>
+                <div class="formLinks">
+                    <a href="/jobSeeker/login">Login via Password</a>
+                </div>
+            </div>
+            <div class="formText">
+                Don't have an account? <a href="/jobSeeker/registration"><span class='formLink'>Sign Up</span></a>
+            </div>
+        </div>
+      </div>
+    </div>
+
+    <% if(display == true){ %>
+      <section class="deactivate-section" id="deactivate-section">
+          <div class="deactivate-container">
+              <div class="deactivate-mssg-box" id="deactivate-mssg-box">
+                  <div class="close-btn" id="close-btn">
+                      <i class="fa-solid fa-xmark"></i>
+                  </div>
+                  <div class="deactivate-icon" id="deactivate-icon">
+                      <i class="fa-solid fa-exclamation"></i>
+                  </div>
+                  <h1>Account Blocked!</h1>
+                  <p>The account has been blocked by the admin!</p>
+              </div>
+          </div>
+      </section>
+  <% } %>
+
+    <script>
+      window.onload = function() {
+          // Show the deactivate section on page load
+          document.getElementById('deactivate-section').classList.remove('hidden');
+  
+          // GSAP animation for the deactivate icon
+          gsap.fromTo("#deactivate-icon", 
+              {scale: 0, rotate: 0}, 
+              {scale: 1, rotate: 360, duration: 1.5}
+          );
+  
+          // GSAP pop animation for deactivate-mssg-box
+          gsap.fromTo("#deactivate-mssg-box", 
+              {scale: 0.5, opacity: 0}, 
+              {scale: 1, opacity: 1, duration: 1, ease: "power2.out"}
+          );
+  
+          // GSAP slide-in animation for h1 and p inside deactivate-mssg-box
+          gsap.fromTo("#deactivate-mssg-box h1", 
+              {x: -100, opacity: 0}, 
+              {x: 0, opacity: 1, duration: 1.2, ease: "power2.out", delay: 1}
+          );
+          gsap.fromTo("#deactivate-mssg-box p", 
+              {x: 100, opacity: 0}, 
+              {x: 0, opacity: 1, duration: 1.2, ease: "power2.out", delay: 1.2}
+          );
+      };
+  
+      const closeBtn = document.getElementById('close-btn');
+      const deactivateSection = document.getElementById('deactivate-section');
+  
+      closeBtn.addEventListener('click', function() {
+          // Hide the deactivate section when close button is clicked
+          deactivateSection.classList.add('hidden');
+      });
+  </script>
+  </body>
+</html>

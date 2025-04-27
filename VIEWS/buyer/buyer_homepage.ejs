@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <link rel="icon" href="%PUBLIC_URL%/favicon.ico" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#000000" />
+    <meta
+      name="description"
+      content="Web site created using create-react-app"
+    />
+    <link rel="apple-touch-icon" href="%PUBLIC_URL%/logo192.png" />
+    <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
+    <link rel="stylesheet" href="/PUBLIC/CSS/applicant_style.css">
+    <script src="/function/Babel.js"></script>
+    <script src="/function/React.js"></script>
+    <script src="/function/ReactDOM.js"></script>
+
+    <link rel="shortcut icon" href="/PUBLIC/ASSETS/IMAGES/favicon.png" type="image/x-icon">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" integrity="sha512-Kc323vGBEqzTmouAECnVceyQqyqdsSiqLQISBL29aUW4U/M7pSPA/gEUZQqv1cwx4OnYxTxve5UMg5GT6L4JJg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+    <title>Everything.india | Home Page</title>
+  </head>
+  <body>
+    <!-- header section  -->
+    <header>
+      <div id="header-box">
+        <div class="header-container" id="header">       
+        </div>
+
+        <% if(isLogged != null && isLogged == true) { %>
+        <div class="profile-box">
+          <div class="notification-box" id="notification-bell">
+            <i class="fa-solid fa-bell"></i>
+            <% if(notiResult.length > 0) { %>
+            <div class="notification-indicator"></div>
+            <% } %>
+          </div>
+          
+          <div class="profile-pic-div" id="profile-div">
+            <% if(profilePic == null){ %>
+              <img src="/PUBLIC/ASSETS/IMAGES/user.png" alt="profile-picture">
+            <% }else{ %>
+            <img src="/PUBLIC/ASSETS/UPLOADS/profile_images/<%= profilePic %>" alt="profile-picture">
+            <% } %>
+          </div>
+        </div>
+
+        <div class="dropdown-box hidden" id="drop-box">
+          <ul>
+            <li><a href="/jobSeeker/editprofile">Edit Profile</a></li>
+            <li><a href="/jobSeeker/changePassword">Change Password</a></li>
+            <li class="logout-btn"><a href="/jobSeeker/logout">Logout <i class="fa-solid fa-right-from-bracket"></i></a></li>
+          </ul>
+        </div>
+  
+        <!-- notification area -->
+        <div class="notification-detail-box hidden" id="notification-detail-box">
+          
+          <%if(notiResult.length > 0){%>
+          
+          <ul>
+  
+            <% notiResult.forEach(notification =>{ %>
+              <li class="notification">
+                <div class="notification-upper notification-slot">
+                  <h3><%= notification.product_name %></h3>
+                  <div class="product-image-box">
+                    <img src="/PUBLIC/ASSETS/IMAGES/product_images/<%= notification.product_image %>" alt="product-image">
+                  </div>
+                </div>
+                <div class="notification-lower notification-slot">
+                  <p><span>Status:</span> <%= notification.status %></p>
+                  <a href="/jobSeeker/deleteNotification?productid=<%= notification.product_id %>"><i class="fa-solid fa-trash"></i></a>
+                </div>
+            </li>
+            <%})%>
+            
+          </ul>
+  
+          <% }else{ %>
+            <h3 class="no-notification">No notifications yet</h3>
+          <% } %>
+        </div>
+        <!-- notification area -->
+
+        <% } else { %>
+          <div class="button-box" id="btn-box">
+            <a class='myBtn' href="/jobSeeker/role_select">Select Role</a>
+          </div>
+        <% } %>
+        
+      </div>
+    </header>
+    <!-- header section ends here -->
+
+    <!-- hero section starts here  -->
+    <section class="heroSection reveal">
+      <div class="heroSectionContentContainer heroContainer">
+        <h1 class="heroSectionTitle">Buy, <span>Sell, Work</span> and Blog</h1>
+      <p class="heroPara">"A unified platform for buying & selling, job hunting, recruitment, and blogging — all in one place."</p>
+      </div>
+      <div class="hero-image-container heroContainer">
+        <img src="/PUBLIC/ASSETS/IMAGES/marketplace_hero.png" alt="" id="hero-image">
+      </div>
+    </section>
+    <!-- hero section ends here  -->
+
+    <!-- how we work section starts  -->
+    <section class="howWeWork reveal">
+      <div class="howWeWorkContainer">
+        <div class="howWeWorkTitleBox">
+          <h2>How We Work</h2>
+          <div class="titleUnderLine"></div>
+        </div>
+        <div class="howWeWorkContent">
+          <div class="howWeWorkContentBox">
+            <img src="/PUBLIC/ASSETS/IMAGES/marketplace.png" alt="MARKETPLACE-IMAGE">
+          </div>
+          <div class="howWeWorkContentBox">
+            <div class="stepBox">
+              <div class="stepBoxContent">
+                <div class="stepBoxContentNumber">1</div>
+                <p>Create Your Account</p>
+              </div>
+              <i class="fa-solid fa-user"></i>
+            </div>
+            <div class="stepBox">
+              <div class="stepBoxContent">
+                <div class="stepBoxContentNumber">2</div>
+                <p>List Your Product</p>
+              </div>
+              <i class="fa-solid fa-list"></i>
+            </div>
+            <div class="stepBox">
+              <div class="stepBoxContent">
+                <div class="stepBoxContentNumber">3</div>
+                <p>Connect With Buyers</p>
+              </div>
+              <i class="fa-solid fa-handshake"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+    <!-- how we work section ends  -->
+
+    <!-- popular products section starts here -->
+    <section class="popularProducts reveal">
+      <div class="popularProductsContainer">
+        <div class="popularProductsTitleBox">
+          <h1>Fresh Recommendations</h1>
+          <p>Discover Products That Match Your Interests And Needs - Explore Our Curated Selection Of Trending Items</p>
+        </div>
+        <div class="popularProductsContent">
+          <% products.forEach(product => { %>
+            <div class="popularProductCard">
+              <div class="productImage">
+                <img src="/PUBLIC/ASSETS/UPLOADS/product_images/<%= product.image_url %>" alt="product image">
+              </div>
+              <div class="productDetails">
+                <div class="productPrice">₹ <%= product.price %></div>
+                <div class="productName"><%= product.product_name %></div>
+                <div class="productLocation"><%= product.location %></div>
+                <div class="postedDate"><%= product.posted_date %></div>
+              </div>
+              <div class="moreDetailsbtn">
+                <a href="/jobSeeker/productDetails?productid=<%= product.product_id %>">View Details</a>
+              </div>
+            </div>
+          <% }) %>
+        </div>
+        
+        <div class="explore">
+          <a href="/jobSeeker/productList">View All</a>
+        </div>
+      </div>
+    </section>
+    <!-- popular products section ends here -->
+
+    <!-- categories section starts  -->
+    <section class="categories howWeWork reveal">
+      <div class="howWeWorkContainer">
+        <div class="howWeWorkTitleBox">
+          <h2>Browse Categories</h2>
+          <div class="titleUnderLine"></div>
+        </div>
+        <div class="categoriesContent">
+          <div class="category-row reveal">
+            <div class="category_box">
+              <img src="/PUBLIC/ASSETS/IMAGES/categories/electronics.png" alt="">
+              <p>Electronics</p>
+            </div>
+            <div class="category_box">
+              <img src="/PUBLIC/ASSETS/IMAGES/categories/vehicles.png" alt="">
+              <p>Vehicles</p>
+            </div>
+            <div class="category_box">
+              <img src="/PUBLIC/ASSETS/IMAGES/categories/property.png" alt="">
+              <p>Property</p>
+            </div>
+            <div class="category_box">
+              <img src="/PUBLIC/ASSETS/IMAGES/categories/furniture.png" alt="">
+              <p>Furniture</p>
+            </div>
+          </div>
+    
+          <div class="category-row reveal">
+            <div class="category_box">
+              <img src="/PUBLIC/ASSETS/IMAGES/categories/fashion.png" alt="">
+              <p>Fashion</p>
+            </div>
+            <div class="category_box">
+              <img src="/PUBLIC/ASSETS/IMAGES/categories/books.png" alt="">
+              <p>Books</p>
+            </div>
+            <div class="category_box">
+              <img src="/PUBLIC/ASSETS/IMAGES/categories/sports.png" alt="">
+              <p>Sports</p>
+            </div>
+            <div class="category_box">
+              <img src="/PUBLIC/ASSETS/IMAGES/categories/services.png" alt="">
+              <p>Services</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+    <!-- categories section ends  -->
+
+    <% if(toastNotification){ %>
+      <div id="toastBox"></div>
+    <% } %>
+    
+    <footer>
+      <div class="footerContainer" id="footer"></div>
+    </footer>
+
+    <!-- Back to top button -->
+    <div class="back-to-top" id="back-to-top">
+      <button>
+        <i class="fa-solid fa-arrow-up"></i> Back to top
+      </button>
+    </div>
+
+    <script>
+      let toastBox = document.getElementById("toastBox");
+      let toastMsg = '<i class="fa-regular fa-square-check"></i><%=toastNotification%>' ;
+  
+      window.onload = function (msg) {
+        let toast = document.createElement("div");
+        toast.classList.add("toast");
+        toast.innerHTML = toastMsg;
+        toastBox.appendChild(toast);
+        setTimeout(() => {
+          toast.remove();
+        }, 6000);
+      };
+
+      // Back to top button functionality
+      const backToTopButton = document.getElementById('back-to-top');
+      window.addEventListener('scroll', () => {
+        if (window.scrollY > 300) {
+          backToTopButton.style.display = 'block';
+        } else {
+          backToTopButton.style.display = 'none';
+        }
+      });
+      
+      backToTopButton.addEventListener('click', () => {
+        window.scrollTo({
+          top: 0,
+          behavior: 'smooth'
+        });
+      });
+    </script> 
+
+    <!-- GSAP library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js" integrity="sha512-7eHRwcbYkK4d9g/6tD/mhkf++eoTHwpNM9woBxtPUBWm67zeAfFC+HrdoE2GanKeocly/VxeLvIqwvCdk7qScg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    
+    <script src="/PUBLIC/JS/script.js"></script>
+
+    <script>
+      document.addEventListener('DOMContentLoaded', ()=>{
+      gsap.from('#hero-image', {
+        opacity: 0,
+        x: 50,
+        duration: 1.8,
+        delay: 0.5
+      });
+
+      gsap.from('.heroSectionContentContainer', {
+        opacity: 0,
+        y: 100,
+        duration: 1.8,
+        staggered: 1, delay:0.5
+      });
+      });
+      
+    </script>
+    
+    <script type="text/babel" src="/PUBLIC/COMPONENTS/Footer.js"></script>
+    <script type="text/babel" src="/PUBLIC/COMPONENTS/Header.js"></script>
+
+    <script type="text/babel">
+      
+      ReactDOM.createRoot(document.getElementById('footer')).render(
+        <Footer/>
+      );
+      ReactDOM.createRoot(document.getElementById('header')).render(
+        <Header/>
+      );
+    </script>
+
+  </body>
+</html>

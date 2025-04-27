@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <link rel="icon" href="%PUBLIC_URL%/favicon.ico" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#000000" />
+    <meta
+      name="description"
+      content="Web site created using create-react-app"
+    />
+    <link rel="apple-touch-icon" href="%PUBLIC_URL%/logo192.png" />
+    <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
+    <link rel="stylesheet" href="/PUBLIC/CSS/applicant_style.css">
+    <script src="/function/Babel.js"></script>
+    <script src="/function/React.js"></script>
+    <script src="/function/ReactDOM.js"></script>
+
+    <link rel="shortcut icon" href="/PUBLIC/ASSETS/IMAGES/favicon.png" type="image/x-icon">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" integrity="sha512-Kc323vGBEqzTmouAECnVceyQqyqdsSiqLQISBL29aUW4U/M7pSPA/gEUZQqv1cwx4OnYxTxve5UMg5GT6L4JJg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+    <link rel="stylesheet" href="https://unpkg.com/swiper/swiper-bundle.min.css" />
+
+    <title>Everything.india | Home Page</title>
+  </head>
+  <body>
+     <!-- header section  -->
+    <header>
+      <div id="header-box">
+        <div class="header-container" id="header">       
+        </div>
+
+        <% if(isLogged != null && isLogged == true) { %>
+        <div class="profile-box">
+          <div class="notification-box" id="notification-bell">
+            <i class="fa-solid fa-bell"></i>
+            <% if(notiResult.length > 0) { %>
+              <div class="notification-indicator"></div>
+            <% } %>
+          </div>
+          <div class="profile-pic-div" id="profile-div">
+            <% if(profilePic == null){ %>
+              <img src="/PUBLIC/ASSETS/IMAGES/user.png" alt="profile-picture">
+            <% }else{ %>
+            <img src="/PUBLIC/ASSETS/UPLOADS/profile_images/<%= profilePic %>" alt="profile-picture">
+            <% } %>
+          </div>
+        </div>
+
+        <div class="dropdown-box hidden" id="drop-box">
+          <ul>
+            <li><a href="/jobSeeker/editprofile">Edit Profile</a></li>
+            <li><a href="/jobSeeker/changePassword">Change Password</a></li>
+            <li class="logout-btn"><a href="/jobSeeker/logout">Logout <i class="fa-solid fa-right-from-bracket"></i></a></li>
+          </ul>
+        </div>
+  
+        <!-- notification area -->
+        <div class="notification-detail-box hidden" id="notification-detail-box">
+          
+          <%if(notiResult.length > 0){%>
+          
+          <ul>
+  
+            <% notiResult.forEach(notification =>{ %>
+              <li class="notification">
+                <div class="notification-upper notification-slot">
+                  <h3><%= notification.job_role %></h3>
+                  <div class="company-logo-box">
+                    <img src="/PUBLIC/ASSETS/IMAGES/company_logos/<%= notification.company %>.png" alt="company-logo">
+                  </div>
+                </div>
+                <div class="notification-lower notification-slot">
+                  <p><span>Status:</span> <%= notification.application_status %></p>
+                  <a href="/jobSeeker/deleteNotification?jobid=<%= notification.job_id %>"><i class="fa-solid fa-trash"></i></a>
+                </div>
+            </li>
+            <%})%>
+            
+          </ul>
+  
+          <% }else{ %>
+            <h3 class="no-notification">No notifications yet</h3>
+          <% } %>
+        </div>
+        <!-- notification area -->
+
+        <% } else { %>
+          <div class="button-box" id="btn-box">
+            <a class='myBtn' href="/jobSeeker/login">Applicant</a>
+            <a class='myBtn' href="/jobCreator/login">Recruiter</a>
+          </div>
+        <% } %>
+        
+      </div>
+    </header>
+    <!-- header section ends here -->
+
+  <section class="middle-section">
+    <div class="job-details">
+        <div class="left-section">
+            <div class="job-desc">
+                <div class="job-role">
+                    <p><%= job.job_role %></p>
+                    <div class="company-icon">
+                        <img src="/PUBLIC/ASSETS/IMAGES/company_logos/<%=job.company%>.png">
+                    </div>
+                </div>
+                <div class="about-job-box">
+                    <!-- work type -->
+                    <div class="abt-job worktype">
+                        <p><i class="fa-solid fa-briefcase"></i> <%= job.job_type %></p>
+                    </div>
+                    <!-- work mode  -->
+                    <div class="abt-job workmode">
+                        <p><i class="fa-solid fa-building"></i> <%= job.work_mode %></p>
+                    </div>
+                    <!-- experience  -->
+                    <div class="abt-job jobexp">
+                        <p><i class="fa-solid fa-laptop-code"></i> <%= job.min_exp %> - <%= job.max_exp %> yrs</p>
+                    </div>
+                </div>
+                <div class="loc-income">
+                    <p><i class="fa-solid fa-money-bill"></i> <%= job.min_salary %> - <%= job.max_salary %> monthly</p>
+                    <p><i class="fa-solid fa-location-dot"></i> <%= job.city %></p>
+                </div>
+
+                <% if(isApplied){ %>
+                <div class="apply-btn applied-box"><i class="fa-solid fa-circle-check"></i> Applied</div>
+                <% } else { %>
+                  <a class="apply-btn" href="/jobSeeker/applyJob?jobID=<%=job.job_id%>">Apply Now</a>
+                <% } %>
+            </div>
+            <div class="description">
+                <div class="description-title">
+                    <p>Description</p>
+                </div>
+                <div class="description-text">
+                    <p><%= job.job_desc %></p>
+                </div>
+            </div>
+        </div>
+
+        <div class="job-req-card">
+            <div class="job-req-title">Job Requirements</div>
+            <div class="job-req-content">
+                <div class="job-req-upper">
+                    <div class="req-upper-left">
+                        <div class="req-category">
+                            <span class="req-label">Experience</span>
+                            <span class="req-value"><%= job.min_exp %> - <%= job.max_exp %> yrs</span>
+                        </div>
+                        <div class="req-category">
+                            <span class="req-label">Qualification</span>
+                            <span class="req-value">Graduate</span>
+                        </div>
+                    </div>
+                    <div class="req-category req-upper-right">
+                        <span class="req-label">Degree</span>
+                        <span class="req-value"><%= job.qualification %></span>
+                    </div>
+                </div>
+                <div class="req-category">
+                    <span class="req-label">Skills</span>
+                    <div class="skill-container-div">
+                      <% 
+                      let color = ['#FF5EF9','#00BD40','#FF0000','#0897FF'];
+                      let i = 0;
+                      let background = ['rgba(246, 139, 255, 0.12)', 'rgba(0, 189, 64, 0.12)',  'rgba(255, 0, 0, 0.12)', 'rgba(8, 151, 255, 0.12)'];
+                    %>
+
+                    <% job.skills_req.split(',').forEach(skill => {
+                    %>
+                    <span class="req-value" style='color: <%= color[i] %>; border: 2px solid <%= color[i] %>; background-color: <%= background[i] %>;'><%= skill %></span>
+                    <% if (i === 3) { %>
+                      <% i = 0; %>
+                    <% } else { %>
+                      <% i++; %>
+                    <% } %>
+                    <% }) %>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <section class="similarJobs reveal">
+      <div class="similarJobsContainer">
+        <div class="similarJobsTitleBox">
+          <h1>Explore Similar Jobs</h1>
+        </div>
+        <div class="similarJobsContent">   
+          <% simjobs.forEach(job => { %>
+            <div class="popularJobCard similarJobCard">
+              <div class="othDetails1">
+                <div class="jobRole"><%= job.job_role %></div>
+                <!-- <div class="dueDate"><%= job.due_date %></div> -->
+              </div>
+              <div class="othDetails2">
+                <div class="loc" style="display: flex; align-items: center; gap: 5px;"><i class="fa-solid fa-location-dot"></i><%= job.city %></div>
+                <div class="jobType"><%= job.job_type %></div>
+              </div>
+              <div class="salary" style="display: flex; align-items: center; gap: 5px;"><i class="fa-solid fa-money-bill"></i> </i><%= job.min_salary %>-<%= job.max_salary %></div>
+              <div class="jobDesc"><%= job.job_desc %></div>
+              <div class="othDetails3">
+                <div class="compImg">
+                  <img src="/PUBLIC/ASSETS/IMAGES/company_logos/<%=job.company %>.png" alt="company logo">
+                </div>
+                <div class="moreDetailsbtn">
+                  <a href="/jobSeeker/applyJob?jobID=<%job.job_id%>">Apply Now</a>
+                </div>
+              </div>
+            </div>
+          <% }) %>
+        </div>
+        
+      </div>
+    </section>
+    
+</section>
+     
+    <footer>
+      <div class="footerContainer" id="footer"></div>
+    </footer>
+
+
+    <!-- Embed the data in a script tag -->
+    
+    <script src="/PUBLIC/JS/script.js"></script>
+    
+    <script type="text/babel" src="/PUBLIC/COMPONENTS/Footer.js"></script>
+    <script type="text/babel" src="/PUBLIC/COMPONENTS/Header.js"></script>
+
+    <script type="text/babel">
+      ReactDOM.render(<Footer />, document.getElementById("footer"));
+      ReactDOM.render(<Header />, document.getElementById("header"));
+    </script>
+    
+
+
+  </body>
+</html>

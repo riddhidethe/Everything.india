@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="/PUBLIC/CSS/applicant_style.css">
+
+  <script src="/function/Babel.js"></script>
+  <script src="/function/React.js"></script>
+  <script src="/function/ReactDOM.js"></script>
+  
+  <link rel="shortcut icon" href="/PUBLIC/ASSETS/IMAGES/favicon.png" type="image/x-icon">
+  <script crossorigin src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css"
+    integrity="sha512-Kc323vGBEqzTmouAECnVceyQqyqdsSiqLQISBL29aUW4U/M7pSPA/gEUZQqv1cwx4OnYxTxve5UMg5GT6L4JJg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <title>Find Jobs | Everything.india</title>
+</head>
+<body>
+  
+  <!-- header section  -->
+  <header>
+    <div id="header-box">
+      <div class="header-container" id="header">       
+      </div>
+
+      <% if(isLogged != null && isLogged == true) { %>
+      <div class="profile-box">
+        <div class="notification-box" id="notification-bell">
+          <i class="fa-solid fa-bell"></i>
+          
+          <% if(notiResult.length > 0){ %>
+          <div class="notification-indicator"></div>
+          <% } %>
+        </div>
+        <div class="profile-pic-div" id="profile-div">
+          <% if(profilePic == null){ %>
+            <img src="/PUBLIC/ASSETS/IMAGES/user.png" alt="profile-picture">
+          <% }else{ %>
+          <img src="/PUBLIC/ASSETS/UPLOADS/profile_images/<%= profilePic %>" alt="profile-picture">
+          <% } %>
+        </div>
+      </div>
+
+      <div class="dropdown-box hidden" id="drop-box">
+        <ul>
+          <li><a href="/jobSeeker/editprofile">Edit Profile</a></li>
+          <li><a href="/jobSeeker/changePassword">Change Password</a></li>
+          <li class="logout-btn"><a href="/jobSeeker/logout">Logout <i class="fa-solid fa-right-from-bracket"></i></a></li>
+        </ul>
+      </div>
+
+      <!-- notification area -->
+      <div class="notification-detail-box hidden" id="notification-detail-box">
+        
+        <%if(notiResult.length > 0){%>
+        
+        <ul>
+
+          <% notiResult.forEach(notification =>{ %>
+            <li class="notification">
+              <div class="notification-upper notification-slot">
+                <h3><%= notification.job_role %></h3>
+                <div class="company-logo-box">
+                  <img src="/PUBLIC/ASSETS/IMAGES/company_logos/<%= notification.company %>.png" alt="company-logo">
+                </div>
+              </div>
+              <div class="notification-lower notification-slot">
+                <p><span>Status:</span> <%= notification.application_status %></p>
+                <a href="/jobSeeker/deleteNotification?jobid=<%= notification.job_id %>"><i class="fa-solid fa-trash"></i></a>
+              </div>
+          </li>
+          <%})%>
+          
+        </ul>
+
+        <% }else{ %>
+          <h3 class="no-notification">No notifications yet</h3>
+        <% } %>
+      </div>
+      <!-- notification area -->
+
+      <% } else { %>
+        <div class="button-box" id="btn-box">
+          <a class='myBtn' href="/jobSeeker/login">Applicant</a>
+          <a class='myBtn' href="/jobCreator/login">Recruiter</a>
+        </div>
+      <% } %>
+      
+    </div>
+
+    
+
+  </header>
+  <!-- header section ends here -->
+
+  <section class="findjobs">
+    <div id="root" style="width: 84vw;"></div>
+  </section>
+
+  <% if(toastNotification){ %>
+    <div id="toastBox"></div>
+  <% } %>
+
+  <footer>
+    <div class="footerContainer" id="footer"></div>
+  </footer>
+
+  <script src="/PUBLIC/JS/script.js"></script>
+  <script type="text/babel" src="/PUBLIC/components/Footer.js"></script>
+  <script type="text/babel" src="/PUBLIC/components/Header.js"></script>
+
+  <script>
+    let toastBox = document.getElementById("toastBox");
+    let toastMsg = '<i class="fa-regular fa-square-check"></i><%=toastNotification%>' ;
+
+    window.onload = function (msg) {
+      let toast = document.createElement("div");
+      toast.classList.add("toast");
+      toast.innerHTML = toastMsg;
+      toastBox.appendChild(toast);
+      setTimeout(() => {
+        toast.remove();
+      }, 6000);
+    };
+  </script>
+
+  <script type="text/babel">
+    const { useState, useEffect } = React;
+
+    const App = () => {
+      const [jobList, setJobList] = useState([]);
+      const [cityFilter, setCityFilter] = useState('');
+      const [skillsFilter, setSkillsFilter] = useState('');
+      const [jobRoleFilter, setJobRoleFilter] = useState('');
+      const [companyFilter, setCompanyFilter] = useState('');
+      const [workTypeFilter, setWorkTypeFilter] = useState('');
+      const [sortBy, setSortBy] = useState('');
+
+      const [currentPage, setCurrentPage] = useState(1);
+      const itemsPerPage = 5;
+
+      useEffect(() => {
+        fetchJobList();
+      }, []);
+
+
+      const fetchJobList = () => {
+        axios.get("https://main.everythingstore.in/jobSeeker/jobs").then((response) => {
+            setJobList(response.data.rows);
+          }).catch((error) => {
+            console.error("Error fetching data:", error);
+          });
+      };
+
+      const applyFilters = () => {
+        const filters = {
+          city: cityFilter,
+          skills_req: skillsFilter,
+          job_role: jobRoleFilter,
+          company: companyFilter,
+          job_type: workTypeFilter,
+          sort_by: sortBy,
+        };
+
+        axios.post('https://main.everythingstore.in/jobSeeker/filters', filters)
+          .then(response => {
+            setJobList(response.data.rows);
+          })
+          .catch(error => {
+            console.error('Error applying filters:', error);
+          });
+      };
+
+      const handleCityChange = (event) => {
+        setCityFilter(event.target.value);
+      };
+
+      const handleSkillsChange = (event) => {
+        setSkillsFilter(event.target.value);
+      };
+
+      const handleJobRoleChange = (event) => {
+        setJobRoleFilter(event.target.value);
+      };
+
+      const handleCompanyChange = (event) => {
+        setCompanyFilter(event.target.value);
+      };
+
+      const handleWorkTypeChange = (event) => {
+        setWorkTypeFilter(event.target.value);
+      };
+
+      const handleSortByChange = (event) => {
+        setSortBy(event.target.value);
+      };
+
+      const handleFilterSubmit = (event) => {
+        event.preventDefault();
+        applyFilters();
+      };
+
+      const handleSearchSubmit = (event) => {
+        event.preventDefault();
+        const jobRole = event.target.role.value;
+        const city = event.target.location.value;
+        setJobRoleFilter(jobRole);
+        setCityFilter(city);
+        applyFilters();
+      };
+
+        const indexOfLastJob = currentPage * itemsPerPage;
+        const indexOfFirstJob = indexOfLastJob - itemsPerPage;
+        const currentJobs = jobList.slice(indexOfFirstJob, indexOfLastJob);
+        const jobPage = Math.ceil(jobList.length / itemsPerPage);
+        const num = [...Array(jobPage).keys()].map((n) => n + 1);
+
+        const handlePageChange = (pageNumber) => {
+          setCurrentPage(pageNumber);
+        };
+
+        const changePage = (pageNumber) => {
+          setCurrentPage(pageNumber);
+        };
+
+      return (
+        <div className="job-list-main-container">
+          <div className="filter-container">
+            <div className="filterSection">
+              <div className="filter-header">
+                <h4>Filters</h4>
+                <button className="close-all-button">Close All</button>
+              </div>
+
+              <div className="dropbox_filter">
+                <label>Skills</label>
+                <select className="sel_box" onChange={handleSkillsChange}>
+                  <option value="">Select Skill</option>
+                  <option value="Python">Python</option>
+                  <option value="Java">Java</option>
+                  <option value="C++">C++</option>
+                </select>
+              </div>
+
+              <div className="dropbox_filter">
+                <label>Job Role</label>
+                <select className="sel_box" value={jobRoleFilter} onChange={handleJobRoleChange}>
+                  <option value="">Select a job role</option>
+                  <option value="Software Developer">Software Developer</option>
+                  <option value="Web Developer">Web Developer</option>
+                  <option value="Mobile Developer">Mobile Developer</option>
+                  <option value="Database Administrator">Database Administrator</option>
+                  <option value="Data Scientist">Data Scientist</option>
+                  <option value="Cloud Engineer">Cloud Engineer</option>
+                  <option value="UI/UX Designer">UI/UX Designer</option>
+                </select>
+              </div>
+
+              <div className="dropbox_filter">
+                <label>Company</label>
+                <select className="sel_box" onChange={handleCompanyChange}>
+                  <option value="">Select Company</option>
+                  <option value="Google">Google</option>
+                  <option value="Microsoft">Microsoft</option>
+                  <option value="Amazon">Amazon</option>
+                  <option value="Accenture">Accenture</option>
+                  <option value="Deloitte">Deloitte</option>
+                  <option value="Airtel">Airtel</option>
+                  <option value="PayPal">PayPal</option>
+                  <option value="Cisco">Cisco</option>
+                  <option value="Persistant">Persistant</option>
+                </select>
+              </div>
+
+              <div className="dropbox_filter">
+                <label>City</label>
+                <select className="sel_box" value={cityFilter} onChange={handleCityChange}>
+                  <option value="">Select City</option>
+                  <option value="Mumbai">Mumbai</option>
+                  <option value="Pune">Pune</option>
+                  <option value="Bangalore">Bangalore</option>
+                  <option value="Hyderabad">Hyderabad</option>
+                  <option value="Kolkata">Kolkata</option>
+                </select>
+              </div>
+
+              <div className="radio-group">
+                <label>Work Type</label>
+                <div>
+                  <input
+                    type="radio"
+                    id="fullTime"
+                    name="workType"
+                    value="full time"
+                    onChange={handleWorkTypeChange}
+                  />
+                  <label htmlFor="fullTime">Full Time</label>
+                </div>
+                <div>
+                  <input
+                    type="radio"
+                    id="partTime"
+                    name="workType"
+                    value="partTime"
+                    onChange={handleWorkTypeChange}
+                  />
+                  <label htmlFor="partTime">Part Time</label>
+                </div>
+              </div>
+
+              <div className="radio-group">
+                <label>Sort By</label>
+                <div>
+                  <input
+                    type="radio"
+                    id="salaryHighToLow"
+                    name="sortBy"
+                    value="salaryHighToLow"
+                    onChange={handleSortByChange}
+                  />
+                  <label htmlFor="salaryHighToLow">Salary - High to Low</label>
+                </div>
+
+              </div>
+
+              <button className="apply-filter-button" onClick={handleFilterSubmit}>
+                Apply Filters
+              </button>
+            </div>
+          </div>
+
+          <div className="job-list-container">
+            <div class="job-card-content-box">
+              <form className="search-bar" onSubmit={handleSearchSubmit}>
+                <input
+                  type="text"
+                  name="role"
+                  placeholder="Search For Jobs Role"
+                  className="search-role"
+                />
+                <input
+                  type="text"
+                  name="location"
+                  placeholder="Search by Location"
+                  className="search-location"
+                />
+                <button type="submit" className="search-button">Search</button>
+              </form>
+
+              {
+                jobList.length == 0 ? (<div className="noJobsFound">
+                  <img src="/PUBLIC/ASSETS/IMAGES/No data.png" alt=""/> 
+                  <div className="noJobs-txt">No Jobs are Found</div> 
+                </div>
+) : ( <div className="jobList">
+              {currentJobs.map((job) => (
+                <div className="job-item" key={job.id}>
+                  <div className="jobHead">
+                    <img src={`/PUBLIC/ASSETS/IMAGES/company_logos/${job.company}.png`} alt="" />
+                    <div className="jobHeaders">
+                      <div className="jobRole">{job.job_role}</div>
+                      <div className="jobCompany">{job.company}</div>
+                    </div>
+                  </div>
+
+                  <div className="othDetails">
+                    {job.job_desc}
+                    <div className="salLoc">
+                      <div>
+                        <i className="fa-solid fa-money-bill-wave"></i>{" "}
+                        {job.min_salary} - {job.max_salary} monthly
+                      </div>
+                      <div>
+                        <i className="fa-solid fa-location-dot"></i> {job.city}
+                      </div>
+                    </div>
+                    <div className="jobDetails">
+                      <div className="jobTags">
+                        <span className="jobType"><i class="fa-solid fa-briefcase"></i>{job.job_type}</span>
+                        <span className="jobMode"><i class="fa-solid fa-building"></i>{job.work_mode}</span>
+                        {
+                          job.min_exp == 0 ? <span className="jobLevel"><i class="fa-solid fa-laptop-code"></i>Freshers</span> : <span className="jobLevel"><i class="fa-solid fa-laptop-code"></i>{job.min_exp} - {job.max_exp} yrs</span>
+                        }
+                      </div>
+                      <a href={`/jobSeeker/jobDetails?jobid=${job.job_id}`} className="detailsButton">See Details</a>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div> )
+              }
+
+             
+            
+            </div>
+
+          </div>
+        
+          <div class="pagination-container">
+            <h3>Page No.</h3>
+            <ul className="pagination">
+                
+                {num.map((n, i) => (
+                  <li
+                    className={`page-item ${currentPage === n ? "active" : ""}`}
+                    key={i}
+                  >
+                    <a
+                      href="#"
+                      className="page-link"
+                      onClick={() => changePage(n)}
+                    >
+                      {n}
+                    </a>
+                  </li>
+                ))}
+                
+              </ul>
+
+          </div>
+          
+        </div>
+      );
+    };
+
+    ReactDOM.render(<App />, document.getElementById("root"));
+    ReactDOM.render(<Footer />, document.getElementById("footer"));
+    ReactDOM.render(<Header />, document.getElementById("header"));
+  </script>
+</body>
+</html>

@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <link rel="icon" href="%PUBLIC_URL%/favicon.ico" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#000000" />
+    <meta name="description" content="Web site created using create-react-app" />
+    <link rel="apple-touch-icon" href="%PUBLIC_URL%/logo192.png" />
+    <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
+    <link rel="stylesheet" href="/PUBLIC/CSS/dashboard_style.css">
+    <link rel="stylesheet" href="/PUBLIC/CSS/applicant_style.css">
+    <script src="/function/Babel.js"></script>
+    <script src="/function/React.js"></script>
+    <script src="/function/ReactDOM.js"></script>
+    <script crossorigin src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <link rel="shortcut icon" href="/PUBLIC/ASSETS/IMAGES/favicon.png" type="image/x-icon">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" integrity="sha512-Kc323vGBEqzTmouAECnVceyQqyqdsSiqLQISBL29aUW4U/M7pSPA/gEUZQqv1cwx4OnYxTxve5UMg5GT6L4JJg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <title>Applicant Dashboard | Everything.india</title>
+    <style>
+      .dashboard .pagination-container {
+    display: flex;
+    justify-content: center; /* Center the pagination */
+    align-items: center; /* Center items vertically if needed */
+    flex-wrap: wrap; /* Ensure items wrap if they exceed container width */
+}
+
+.dashboard .pagination-container .pagination {
+    display: flex;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.dashboard .pagination-container .page-item {
+    margin: 0 5px; /* Add space between pagination items */
+}
+
+.dashboard .pagination-container .page-link {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 30px;
+    height: 30px;
+    text-decoration: none;
+    color: #00a9b7;
+    border: 2px solid #00a8b748;
+    border-radius: 50%;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+.dashboard .pagination-container .page-link:hover {
+    background-color: #f8f9faab;
+    color: #00a9b7;
+    box-shadow: 0 0 0 0.2rem rgba(0, 170, 185, 0.5);
+}
+
+.dashboard .pagination-container .page-item.active .page-link {
+    background-color: #00a9b7;
+    color: #fff;
+    border-color: #00a9b7;
+}
+
+.dashboard .pagination-container .page-item .page-link:focus {
+    outline: none;
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}
+
+.application-cards{
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    padding: 10px;
+}
+
+.application-cards::-webkit-scrollbar{
+    display: none;
+}
+    </style>
+  </head>
+  <body>
+    <!-- header section  -->
+    <header>
+      <div id="header-box">
+        <div class="header-container" id="header"></div>
+
+        <% if(isLogged != null && isLogged == true) { %>
+        <div class="profile-box">
+          <div class="notification-box" id="notification-bell">
+            <i class="fa-solid fa-bell"></i>
+            <% if(notifications.length > 0){ %>
+              <div class="notification-indicator"></div>
+            <% } %>
+          </div>
+          <div class="profile-pic-div" id="profile-div">
+            <% if(profilePic == null){ %>
+              <img src="/PUBLIC/ASSETS/IMAGES/user.png" alt="profile-picture">
+            <% }else{ %>
+            <img src="/PUBLIC/ASSETS/UPLOADS/profile_images/<%= profilePic %>" alt="profile-picture">
+            <% } %>
+          </div>
+        </div>
+
+        <div class="dropdown-box hidden" id="drop-box">
+          <ul>
+            <li><a href="/jobSeeker/editprofile">Edit Profile</a></li>
+            <li><a href="/jobSeeker/changePassword">Change Password</a></li>
+            <li class="logout-btn"><a href="/jobSeeker/logout">Logout <i class="fa-solid fa-right-from-bracket"></i></a></li>
+          </ul>
+        </div>
+
+        <!-- notification area -->
+        <div class="notification-detail-box hidden" id="notification-detail-box">
+          <% if(notifications.length > 0) { %>
+          <ul>
+            <% notifications.forEach(notification => { %>
+              <a href="">
+                <li class="notification">
+                  <div class="notification-upper notification-slot">
+                    <h3><%= notification.job_role %></h3>
+                    <div class="company-logo-box">
+                      <img src="/PUBLIC/ASSETS/IMAGES/company_logos/<%= notification.company %>.png" alt="company-logo">
+                    </div>
+                  </div>
+                  <div class="notification-lower notification-slot">
+                    <p><span>Status:</span> <%= notification.application_status %></p>
+                    <a href="/jobSeeker/deleteNotification?jobid=<%= notification.job_id %>"><i class="fa-solid fa-trash"></i></a>
+                  </div>
+                </li>
+              </a>
+            <% }) %>
+          </ul>
+          <% } else { %>
+            <h3 class="no-notification">No notifications yet</h3>
+          <% } %>
+        </div>
+        <!-- notification area -->
+
+        <% } else { %>
+        <div class="button-box" id="btn-box">
+          <a class='myBtn' href="/jobSeeker/login">Applicant</a>
+          <a class='myBtn' href="/jobCreator/login">Recruiter</a>
+        </div>
+        <% } %>
+      </div>
+    </header>
+    <!-- header section ends here -->
+
+    <div id="root"></div>
+    <script type="text/babel">
+      const { useState, useEffect } = React;
+
+      const App = () => {
+        const [userProfile, setUserProfile] = useState({});
+        const [applications, setApplications] = useState([]);
+        const [uniqueJobs, setUniqueJobs] = useState([]);
+        const [filteredApplications, setFilteredApplications] = useState([]);
+        const [jobRoleFilter, setJobRoleFilter] = useState('');
+        const [currentPage, setCurrentPage] = useState(1);
+        const itemsPerPage = 5;
+
+        useEffect(() => {
+          fetchDashboardDetails();
+        }, []);
+
+        const fetchDashboardDetails = () => {
+          axios
+            .get("https://main.everythingstore.in/jobSeeker/dashboard")
+            .then((response) => {
+              const { user, applications, uniqueJobs } = response.data;
+              setUserProfile(user);
+              setApplications(applications);
+              setFilteredApplications(applications);
+              setUniqueJobs(uniqueJobs);
+            })
+            .catch((error) => {
+              console.error("Error fetching data:", error);
+            });
+        };
+
+        const handleJobRoleChange = (event) => {
+          const selectedRole = event.target.value;
+          setJobRoleFilter(selectedRole);
+          setCurrentPage(1); // Reset to the first page
+
+          if (selectedRole === "") {
+            setFilteredApplications(applications);
+          } else {
+            const filtered = applications.filter(
+              (application) => application.job_role === selectedRole
+            );
+            setFilteredApplications(filtered);
+          }
+        };
+
+        const indexOfLastJob = currentPage * itemsPerPage;
+        const indexOfFirstJob = indexOfLastJob - itemsPerPage;
+        const currentJobs = filteredApplications.slice(indexOfFirstJob, indexOfLastJob);
+        const totalPages = Math.ceil(filteredApplications.length / itemsPerPage);
+
+        const handlePageChange = (pageNumber) => {
+          setCurrentPage(pageNumber);
+        };
+
+        return (
+          <section className="dashboard">
+            {/* User Profile Section */}
+            <div className="left-sec">
+              <div className="abt-user">
+                <div className="profile-pic">
+                  <img
+                    src={
+                      userProfile.profile_pic_code
+                        ? `/PUBLIC/ASSETS/UPLOADS/profile_images/${userProfile.profile_pic_code}`
+                        : "/PUBLIC/ASSETS/IMAGES/user.png"
+                    }
+                    alt="profile-picture"
+                  />
+                </div>
+                <div className="user-details">
+                  <div className="username">
+                    {userProfile.first_name} {userProfile.last_name}
+                  </div>
+                  <div className="role">@{userProfile.username}</div>
+                </div>
+                <a
+                  href={`/jobSeeker/editprofile?applicantid=${userProfile.applicant_id}`}
+                >
+                  <div className="edit-button">
+                    <i className="fa-regular fa-pen-to-square"></i>Edit Profile
+                  </div>
+                </a>
+                <div className="buttons">
+                  <a
+                    href={`/PUBLIC/ASSETS/UPLOADS/cv_pdfs/${userProfile.cv}`}
+                    download
+                  >
+                    <div className="dashboard-button">Resume</div>
+                  </a>
+                </div>
+              </div>
+
+              {/* Skills Section */}
+              <div className="skills">
+                <div className="section-heading">Skills</div>
+                <div className="applicant-card-row">
+                  {userProfile.skills &&
+                    userProfile.skills.map((skill, index) => {
+                      const color = [
+                        "#FF5EF9",
+                        "#00BD40",
+                        "#FF0000",
+                        "#0897FF",
+                      ][index % 4];
+                      const background = [
+                        "rgba(246, 139, 255, 0.12)",
+                        "rgba(0, 189, 64, 0.12)",
+                        "rgba(255, 0, 0, 0.12)",
+                        "rgba(8, 151, 255, 0.12)",
+                      ][index % 4];
+                      return (
+                        <div
+                          key={index}
+                          className="skill-box"
+                          style={{
+                            color,
+                            border: `2px solid ${color}`,
+                            backgroundColor: background,
+                          }}
+                        >
+                          {skill}
+                        </div>
+                      );
+                    })}
+                </div>
+              </div>
+            </div>
+
+            {/* Applications Section */}
+            <div className="right-sec">
+              <div className="dropbox_filter">
+                <select className="sel_box" value={jobRoleFilter} onChange={handleJobRoleChange}>
+                  <option value="">Select a Job Role</option>
+                  {uniqueJobs.map((job, index) => (
+                    <option key={index} value={job.job_role}>
+                      {job.job_role}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div className="application-cards">
+                {filteredApplications.length > 0 ? (
+                  currentJobs.map((application, index) => (
+                    <div key={index} className="jobCard" id={application.application_id}>
+                      <div className="jobcard-upper-container">
+                        <div className="jobCard-upper-left-box">
+                          <h2>{application.job_role}</h2>
+                          <p>{application.job_desc}</p>
+                        </div>
+                        <div className="jobCard-upper-right-box">
+                          <img
+                            src={`/PUBLIC/ASSETS/IMAGES/company_logos/${application.company}.png`}
+                            alt="company-logo"
+                          />
+                        </div>
+                      </div>
+                      <div className="jobcard-lower-container">
+                        <div className="jobcard-lower-left-box">
+                          <div className="about-job-card-container">
+                            <div className="about-job-card-box work-type">
+                              <p>
+                                <i className="fa-solid fa-briefcase"></i>
+                                {application.job_type}
+                              </p>
+                            </div>
+                            <div className="about-job-card-box work-mode">
+                              <p>
+                                <i className="fa-solid fa-building"></i>
+                                {application.work_mode}
+                              </p>
+                            </div>
+                            <div className="about-job-card-box experience">
+                              <p>
+                                <i className="fa-solid fa-laptop-code"></i>
+                                {application.min_exp} - {application.max_exp} yrs
+                              </p>
+                            </div>
+                          </div>
+                          <div className="job-location-sal-box">
+                            <div className="location-box detail">
+                              <i className="fa-solid fa-location-dot"></i>
+                              {application.city}
+                            </div>
+                            <div className="salary-box detail">
+                              <i className="fa-solid fa-money-bill"></i> Rs.
+                              {application.min_salary} - Rs.
+                              {application.max_salary} monthly
+                            </div>
+                          </div>
+                        </div>
+                        <div className="jobcard-lower-right-box">
+                          <div className="status-box">
+                            {application.application_status}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  ))
+                ) : (
+                  <div className="no-application">
+                    <img src="/PUBLIC/ASSETS/IMAGES/No data.png" alt="no-data" />
+                    <h3>Not Applied For Any Jobs</h3>
+                  </div>
+                )}
+              </div>
+              
+              <div className="pagination-container">
+                <h3>Page No.</h3>
+                <ul className="pagination">
+                  {[...Array(totalPages).keys()].map((n) => (
+                    <li
+                      className={`page-item ${currentPage === n + 1 ? "active" : ""}`}
+                      key={n}
+                    >
+                      <a
+                        href="#"
+                        className="page-link"
+                        onClick={() => handlePageChange(n + 1)}
+                      >
+                        {n + 1}
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+          </section>
+        );
+      };
+
+      ReactDOM.render(<App />, document.getElementById("root"));
+    </script>
+     
+    <footer>
+      <div class="footerContainer" id="footer"></div>
+    </footer>
+
+
+    <!-- Embed the data in a script tag -->
+    <script src="/PUBLIC/JS/script.js"></script>
+    <script type="text/babel" src="/PUBLIC/COMPONENTS/Footer.js"></script>
+    <script type="text/babel" src="/PUBLIC/COMPONENTS/Header.js"></script>
+    <script type="text/babel">
+      ReactDOM.render(<Footer />, document.getElementById("footer"));
+      ReactDOM.render(<Header />, document.getElementById("header"));
+    </script>
+  </body>
+</html>

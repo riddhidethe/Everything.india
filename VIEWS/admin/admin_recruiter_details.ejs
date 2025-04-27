@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- Include correct paths to React, ReactDOM, and Babel -->
+    <script src="/function/Babel.js"></script>
+    <script src="/function/React.js"></script>
+    <script src="/function/ReactDOM.js"></script>
+    <link rel="shortcut icon" href="/PUBLIC/ASSETS/IMAGES/favicon.png" type="image/x-icon">
+    <link rel="stylesheet" href="/PUBLIC/css/recruiter_style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" integrity="sha512-Kc323vGBEqzTmouAECnVceyQqyqdsSiqLQISBL29aUW4U/M7pSPA/gEUZQqv1cwx4OnYxTxve5UMg5GT6L4JJg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+    <script crossorigin src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+
+    <title>Recruiter Dashboard | Everything.india</title>
+    <style>
+        .profile-pic {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            margin: 0 auto;
+            background-color: #fff;
+            box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
+            object-fit: contain;
+        }
+    </style>
+</head>
+<body>
+    <section class="recruiter-section">
+        <nav class="recruiter-navigation" id="sidenavbar"></nav>
+        <div class="recruiter-main-container">
+            <header class="recruiter-header" id="recruiter_header"></header>
+            <div class="recruiter-application-container" id="application-container"></div>
+            <% if(toastNotification){ %>
+                <div id="toastBox"></div>
+              <% } %>
+            
+            <footer>
+                <div class="footerContainer" id="footer"></div>
+            </footer>
+        </div>
+    </section>
+
+    <script>
+        let toastBox = document.getElementById("toastBox");
+        let toastMsg = '<i class="fa-regular fa-square-check"></i><%=toastNotification%>' ;
+    
+        window.onload = function (msg) {
+          let toast = document.createElement("div");
+          toast.classList.add("toast");
+          toast.innerHTML = toastMsg;
+          toastBox.appendChild(toast);
+          setTimeout(() => {
+            toast.remove();
+          }, 6000);
+        };
+      </script>
+
+    <script type="text/babel" src="/PUBLIC/components/AdminSideNavBar.js"></script>
+    <script type="text/babel" src="/PUBLIC/components/RecruiterHeader.js"></script>
+    <script type="text/babel" src="/PUBLIC/COMPONENTS/RecruiterFooter.js"></script>
+
+    <script type="text/babel">
+        const profilePic = "<%= profilePic %>";
+        const username = "<%= username %>";
+
+        const { useEffect, useState } = React;
+
+        function App() {
+            const [recruiter, setRecruiterList] = useState({
+                creator_fname: '',
+                creator_lname: '',
+                company: '',
+                emailID: '',
+                contact_number: '',
+                password: ''
+            });
+            const [jobList, setJobList] = useState([]);
+            const [currentPage, setCurrentPage] = useState(1);
+            const itemsPerPage = 5;
+
+            useEffect(() => {
+                fetchRecruiterData();
+            }, []);
+
+            const fetchRecruiterData = () => {
+                axios.get('https://main.everythingstore.in/admin/getRecruiterData').then((response) => {
+                    const data = response.data.recruiterList[0] || {};
+                    setRecruiterList({
+                        creator_fname: data.creator_fname || '',
+                        creator_lname: data.creator_lname || '',
+                        company: data.company || '',
+                        emailID: data.emailID || '',
+                        contact_number: data.contact_number || '',
+                        password: data.password || ''
+                    });
+                    setJobList(response.data.jobList);
+                }).catch((error) => {
+                    console.error("Error fetching data:", error);
+                });
+            };
+
+            const handleInputChange = (e) => {
+                const { name, value } = e.target;
+                setRecruiterList((prevRecruiter) => ({
+                    ...prevRecruiter,
+                    [name]: value,
+                }));
+            };
+
+            const indexOfLastJob = currentPage * itemsPerPage;
+            const indexOfFirstJob = indexOfLastJob - itemsPerPage;
+            const currentJobs = jobList.slice(indexOfFirstJob, indexOfLastJob);
+
+            const totalPages = Math.ceil(jobList.length / itemsPerPage);
+
+            const handlePageChange = (pageNumber) => {
+                setCurrentPage(pageNumber);
+            };
+
+            return (
+                <>
+                    <div className="details-form-container">
+                        <div className="details-form-title-box">
+                            <h2>Edit Recruiter Details</h2>
+                        </div>
+                        <div className="details-form-content-box">
+                            <form action="/admin/updateRecruiterDetails" method="post">
+                                <div className="details-form-left">
+                                    <div className="image-box">
+                                        <img src={`/PUBLIC/ASSETS/IMAGES/company_logos/${recruiter.company}.png`} alt="company-logo" />
+                                    </div>
+                                </div>
+                                <div className="details-form-right">
+                                    <div className="detail-form-row">
+                                        <div className="detail-form-input-box">
+                                            <label htmlFor="creator_fname">First Name</label>
+                                            <input type="text" name="creator_fname" id="creator_fname" placeholder="First Name" value={recruiter.creator_fname} onChange={handleInputChange} />
+                                        </div>
+                                        <div className="detail-form-input-box">
+                                            <label htmlFor="creator_lname">Last Name</label>
+                                            <input type="text" name="creator_lname" id="creator_lname" placeholder="Last Name" value={recruiter.creator_lname} onChange={handleInputChange} />
+                                        </div>
+                                        <div className="detail-form-input-box">
+                                            <label htmlFor="company">Company</label>
+                                            <input type="text" name="company" id="company" placeholder="Company" value={recruiter.company} onChange={handleInputChange} />
+                                        </div>
+                                    </div>
+                                    <div className="detail-form-row">
+                                        <div className="detail-form-input-box">
+                                            <label htmlFor="emailID">Email</label>
+                                            <input type="email" name="emailID" id="emailID" placeholder="Email ID" value={recruiter.emailID} onChange={handleInputChange} />
+                                        </div>
+                                        <div className="detail-form-input-box">
+                                            <label htmlFor="contact_number">Phn No</label>
+                                            <input type="text" name="contact_number" id="contact_number" placeholder="Phone No." value={recruiter.contact_number} onChange={handleInputChange} />
+                                        </div>
+                                    </div>
+                                    <div className="detail-form-row">
+                                        <div className="detail-form-input-box">
+                                            <label htmlFor="password">Password</label>
+                                            <input type="password" name="password" id="password" placeholder="Password" onChange={handleInputChange} />
+                                            <i className="fa-solid fa-eye-slash"></i>
+                                        </div>
+                                        <div className="dropbox_filter">
+                                            <select className="sel_box" name="status">
+                                                <option value="">Select a Status</option>
+                                                <option value="1">Active</option>
+                                                <option value="0">Inactive</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <button type="submit" className="update-btn">Update</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                    <div className="table-box">
+                        <div className="table-container">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Job Role</th>
+                                        <th>City</th>
+                                        <th>Company</th>
+                                        <th>Status</th>
+                                        <th>Salary(Rs.)</th>
+                                        <th>Experience(yrs)</th>
+                                        <th>Due Date</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {currentJobs.map((job) => (
+                                        <tr key={job.job_id}>
+                                            <td>{job.job_role}</td>
+                                            <td>{job.city}</td>
+                                            <td>{job.company}</td>
+                                            <td>{job.job_status}</td>
+                                            <td>{job.min_salary} - {job.max_salary}</td>
+                                            <td>{job.min_exp} - {job.max_exp}</td>
+                                            <td>{job.due_date.substring(0, 10).split("-").reverse().join("-")}</td>                                        
+                                            <td className="deleteButton"><a href={`/admin/deleteJob?job_id=${job.job_id}`}><i className="fa-solid fa-trash"></i></a></td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        </div>
+                        <div className="page-number-box">
+                            <h3>Pages</h3>
+                            <div className="pageNumberContent">
+                                {Array.from({ length: totalPages }, (_, index) => (
+                                    <div
+                                        key={index}
+                                        className={`pagenumber ${currentPage === index + 1 ? 'active' : ''}`}
+                                        onClick={() => handlePageChange(index + 1)}
+                                    >
+                                        {index + 1}
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    </div>
+                </>
+            );
+        }
+
+        ReactDOM.createRoot(document.getElementById('sidenavbar')).render(<AdminSideNavBar />);
+        ReactDOM.createRoot(document.getElementById('recruiter_header')).render(
+            <RecruiterHeader title="Admin Panel" profilePic={profilePic} username={username} />
+        );
+        ReactDOM.render(<App />, document.getElementById('application-container'));
+        ReactDOM.createRoot(document.getElementById('footer')).render(<RecruiterFooter />);
+    </script>
+</body>
+</html>

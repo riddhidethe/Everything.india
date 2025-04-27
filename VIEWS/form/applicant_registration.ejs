@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Registration Form</title>
+    <script src="/function/Babel.js"></script>
+    <script src="/function/React.js"></script>
+    <script src="/function/ReactDOM.js"></script>
+    <link rel="stylesheet" href="/public/css/style.css">
+    <link rel="shortcut icon" href="/public/assets/images/favicon.png" type="image/x-icon">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" integrity="sha512-Kc323vGBEqzTmouAECnVceyQqyqdsSiqLQISBL29aUW4U/M7pSPA/gEUZQqv1cwx4OnYxTxve5UMg5GT6L4JJg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+  </head>
+  <body>
+    <div class="container">
+        <div class="formsDiv">
+            <div class="leftContainer formContainer">
+                <img src="/public/assets/images/form_images/signup.png" alt="login-img" /> 
+            </div>
+            <div class="rightContainer formContainer">
+                <h1 class='formTitle'>Enter the World of Careers</h1>
+                <div class="formBox">
+                    <form action="/jobSeeker/registration" method="post">
+                        <input type="hidden" name="userRole" value="<%= userRole %>">
+                        <div class="formInputBox">
+                            <input type="text" placeholder="Username" class='formInput' name="username" required/>
+                            <i class="fa-solid fa-user formIcons"></i>
+                        </div>
+                        <div class="formInputBox">
+                            <input type="email" placeholder="Email Id" class='formInput' name="emailID" required/>
+                            <i class="fa-solid fa-envelope formIcons"></i>
+                        </div>
+                        <div class="formInputBox">
+                            <input type="password" placeholder="Password" class='formInput' name="password" id="password" required/>
+                            <i class="fa-solid fa-eye-slash formIcons" id="password-icon"></i>
+                        </div>
+                        <div class="formInputBox">
+                            <input type="password" placeholder="Confirm Password" class='formInput' name="con_password"id="password2" required/>
+                            <i class="fa-solid fa-eye-slash formIcons" id="password-icon2"></i>
+                        </div>
+                        <span id="error-msg" style="color: red;"><%= errorMsg %></span><br>
+                        <button class='formButton'>Register</button>
+                    </form>
+                    
+                </div>
+                <div class="formText">
+                    Already have an account? <a href="/jobSeeker/login"><span class='formLink'>Login</span></a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const togglePassword = document.getElementById('password-icon');
+        const password = document.getElementById('password');
+
+        togglePassword.addEventListener('click', function (e) {
+            let type = password.getAttribute('type');
+            if (type === 'password') {
+                password.setAttribute('type', 'text');
+                togglePassword.classList.remove('fa-eye-slash');
+                togglePassword.classList.add('fa-eye');
+            }else{
+                password.setAttribute('type', 'password');
+                togglePassword.classList.remove('fa-eye');
+                togglePassword.classList.add('fa-eye-slash');
+            }
+        });
+
+        const togglePassword2 = document.getElementById('password-icon2');
+        const password2 = document.getElementById('password2');
+
+        togglePassword2.addEventListener('click', function (e) {
+            let type = password2.getAttribute('type');
+            if (type === 'password') {
+                password2.setAttribute('type', 'text');
+                togglePassword2.classList.remove('fa-eye-slash');
+                togglePassword2.classList.add('fa-eye');
+            }else{
+                password2.setAttribute('type', 'password');
+                togglePassword2.classList.remove('fa-eye');
+                togglePassword2.classList.add('fa-eye-slash');
+            }
+        });
+      </script>
+  </body>
+</html>

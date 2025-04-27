@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <script src="/function/Babel.js"></script>
+    <script src="/function/React.js"></script>
+    <script src="/function/ReactDOM.js"></script>
+    <link rel="shortcut icon" href="/PUBLIC/ASSETS/IMAGES/favicon.png" type="image/x-icon">
+    <link rel="stylesheet" href="/PUBLIC/css/recruiter_style.css">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" integrity="sha512-Kc323vGBEqzTmouAECnVceyQqyqdsSiqLQISBL29aUW4U/M7pSPA/gEUZQqv1cwx4OnYxTxve5UMg5GT6L4JJg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+
+    <script crossorigin src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+
+    <title>Recruiter Dashboard | Everything.india</title>
+
+    
+</head>
+<body>
+    <section class="recruiter-section">
+        <!-- side navbar -->
+        <nav class="recruiter-navigation" id="sidenavbar"></nav>
+        <!-- side navbar ends -->
+
+        <!-- main content section starts -->
+        <div class="recruiter-main-container">
+            <header class="recruiter-header" id="recruiter_header"></header>
+
+           <!-- content area jaha pain content rhega  -->
+           <div class="recruiter-application-container" id="application-container"></div>
+
+           <% if(toastNotification){ %>
+            <div id="toastBox"></div>
+          <% } %>
+        
+
+            <footer>
+                <div class="footerContainer" id="footer"></div>
+            </footer>
+        </div>
+        <!-- main content section ends -->
+    </section>
+    <script>
+        let toastBox = document.getElementById("toastBox");
+        let toastMsg = '<i class="fa-regular fa-square-check"></i><%=toastNotification%>' ;
+    
+        window.onload = function (msg) {
+          let toast = document.createElement("div");
+          toast.classList.add("toast");
+          toast.innerHTML = toastMsg;
+          toastBox.appendChild(toast);
+          setTimeout(() => {
+            toast.remove();
+          }, 6000);
+        };
+      </script>
+    <script type="text/babel" src="/PUBLIC/components/AdminSideNavBar.js"></script>
+    <script type="text/babel" src="/PUBLIC/components/RecruiterHeader.js"></script>
+    <script type="text/babel" src="/PUBLIC/COMPONENTS/RecruiterFooter.js"></script>
+
+    <script type="text/babel">
+        const profilePic = "<%= profilePic %>";
+        const username = "<%= username %>";
+
+        const { useState, useEffect } = React;
+        function App(){
+            const [applicantList, setApplicantList] = useState([]);
+            const [statusFilter, setStatusFilter] = useState("");
+
+            const [currentPage, setCurrentPage] = useState(1);
+            const itemsPerPage = 10;
+
+            useEffect(()=>{
+                fetchApplicantData();
+            }, []);
+
+            // fetch function to get all recruiter data
+            const fetchApplicantData = ()=>{
+                axios.get('https://main.everythingstore.in/admin/applicantList').then((response)=>{
+                    setApplicantList(response.data.rows);
+                }).catch((error)=>{
+                    console.error("Error fetching data:", error);
+                });
+            };
+
+            // filter json object
+            const applyFilter = ()=>{
+                const filter = {
+                    status: statusFilter
+                };
+
+                // get the filtered recruiter list
+                axios.post('https://main.everythingstore.in/admin/filterApplicant', filter)
+                .then(response => {
+                    setApplicantList(response.data.rows);
+                    setCurrentPage(1);
+                })
+                .catch(error => {
+                    console.error('Error applying filters:', error);
+                });
+            };
+
+
+            const handleStatusChange = (event) => {
+                const selectedStatus = event.target.value;
+                setStatusFilter(selectedStatus);
+            };
+
+            const handleFilterSubmit = (event) => {
+                event.preventDefault();
+                applyFilter();
+            };
+
+            const indexOfLastApplicant = currentPage * itemsPerPage;
+            const indexOfFirstApplicant = indexOfLastApplicant - itemsPerPage;
+            const currentApplicant = applicantList.slice(indexOfFirstApplicant, indexOfLastApplicant);
+
+            const totalPages = Math.ceil(applicantList.length / itemsPerPage);
+
+            const handlePageChange = (pageNumber) => {
+                setCurrentPage(pageNumber);
+            };
+
+            return(
+                <>
+                    <div className="application-filter-box">
+                        <div className="filter-title-box">
+                            <div className="filter-title">
+                                <i className="fa-solid fa-filter"></i>
+                                <h3>Filter</h3>
+                            </div>
+                        </div>
+                        
+
+                        <div className="dropbox_filter">
+                            <select className="sel_box" value={statusFilter} onChange={handleStatusChange}>
+                            <option value="">Select Account Status</option>
+                            <option value="1">Active</option>
+                            <option value="0">Inactive</option>
+                            </select>
+                        </div>
+
+                        <div class="recruiter-filter-btn-box">
+                            <button type="submit" className="filter-btn" onClick={handleFilterSubmit}>Apply</button>
+                            <button type="reset" className="filter-btn close-all-btn">Clear All</button>
+                        </div>
+                    </div>
+
+                    <div class="table-box">
+                        <div class="table-container">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Profile</th>
+                                        <th>First Name</th>
+                                        <th>Last Name</th>
+                                        <th>Email ID</th>
+                                        <th>Status</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {
+                                        currentApplicant.map((applicant, index)=>(
+                                            <tr key={index}>
+                                            <td><img class="profile-pic" src={`/PUBLIC/ASSETS/UPLOADS/profile_images/${applicant.profile_pic_code}`}/></td>
+                                            <td>{applicant.first_name}</td>
+                                            <td>{applicant.last_name}</td>
+                                            <td>{applicant.email_id}</td>
+                                            {
+                                                applicant.isActive == 1 ? (
+                                                    <td className="status-col"><span class="status active">Active</span></td>
+                                                ) : (
+                                                    <td className="status-col"><span class="status inactive">Deactive</span></td>
+                                                )
+                                            }
+
+                                            {
+                                                applicant.isActive ? (
+                                                    <td><a class="action-btn" href={`/admin/takeActionApplicant?applicant_id=${applicant.applicant_id}&isActive=0`}>Deactivate</a></td>
+                                                ) : (
+                                                    <td><a class="action-btn" href={`/admin/takeActionApplicant?applicant_id=${applicant.applicant_id}&isActive=1`}>Activate</a></td>
+                                                )
+                                            }
+                                            <td>
+                                                <a href={`/admin/applicantDetails?applicant_id=${applicant.applicant_id}`} className="editButton">Edit <i class="fa-solid fa-pen-to-square"></i></a>
+                                            </td>                                           
+                                            <td className="deleteButton"><a href={`/admin/deleteApplicant?email_id=${applicant.email_id}&applicant_id=${applicant.applicant_id}`}><i class="fa-solid fa-trash"></i></a></td>
+                                        </tr>
+                                        ))
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <div className="page-number-box">
+                            <h3>Pages</h3>
+                            <div className="pageNumberContent">
+                                {Array.from({ length: totalPages }, (_, index) => (
+                                    <div
+                                        key={index}
+                                        className={`pagenumber ${currentPage === index + 1 ? 'active' : ''}`}
+                                        onClick={() => handlePageChange(index + 1)}
+                                    >
+                                        {index + 1}
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    </div>
+
+                </>
+            );
+        };
+
+        ReactDOM.createRoot(document.getElementById('sidenavbar')).render(
+            <AdminSideNavBar/>
+        );
+
+        ReactDOM.createRoot(document.getElementById('recruiter_header')).render(
+            <RecruiterHeader title='Admin Panel' profilePic={profilePic} username = {username} />
+        );
+        ReactDOM.createRoot(document.getElementById('application-container')).render(
+            <App/>
+        );
+        ReactDOM.render(<RecruiterFooter />, document.getElementById("footer"));
+
+    </script>   
+</body>
+</html>

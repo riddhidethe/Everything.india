@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OTP Verification</title>
+    <link rel="stylesheet" href="/public/css/style.css">
+    <link rel="shortcut icon" href="/public/assets/images/favicon.png" type="image/x-icon">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" integrity="sha512-Kc323vGBEqzTmouAECnVceyQqyqdsSiqLQISBL29aUW4U/M7pSPA/gEUZQqv1cwx4OnYxTxve5UMg5GT6L4JJg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+</head>
+<body>
+    <div class="container">
+        <div class="formsDiv">
+            <div class="leftContainer formContainer">
+                <img src="/public/assets/images/form_images/otp.png" alt="otp-img" /> 
+            </div>
+            <div class="rightContainer formContainer">
+                <h1 class='formTitle'>Verify OTP</h1>
+                <p class="formPara">Please enter the OTP, received on your email id abc****@gmail.com</p>
+                <div class="formBox">
+                    <form id="otpForm" action="/jobSeeker/verify_otp_2" method="post">
+                        <div class="otp-box">
+                            <input type="text" class="otpInput" maxlength="1" required>
+                            <input type="text" class="otpInput" maxlength="1" required>
+                            <input type="text" class="otpInput" maxlength="1" required>
+                            <input type="text" class="otpInput" maxlength="1" required>
+                        </div>
+                        <input type="hidden" id="otp" name="otp">
+                        <button class='formButton' type="submit">Verify OTP</button>
+                    </form>
+                    <div class="formLinks">
+                        <button style="border: none; background: none; font-size: 15px; font-weight: 500; color: #333;">Resend OTP</button>
+                        <p style="font-size: 15px; font-weight: 500; color: #333;">02:59</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('otpForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const otpInputs = document.querySelectorAll('.otpInput');
+            let otp = '';
+            otpInputs.forEach(input => {
+                otp += input.value;
+            });
+            document.getElementById('otp').value = otp;
+            this.submit();
+        });
+    </script>
+</body>
+</html>

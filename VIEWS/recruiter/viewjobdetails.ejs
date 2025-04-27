@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="/function/Babel.js"></script>
+    <script src="/function/React.js"></script>
+    <script src="/function/ReactDOM.js"></script>
+    <link rel="shortcut icon" href="/PUBLIC/assets/images/favicon.png" type="image/x-icon">
+    <link rel="stylesheet" href="/PUBLIC/css/recruiter_style.css">
+    <link rel="stylesheet" href="/PUBLIC/css/creatorJobs.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" integrity="sha512-Kc323vGBEqzTmouAECnVceyQqyqdsSiqLQISBL29aUW4U/M7pSPA/gEUZQqv1cwx4OnYxTxve5UMg5GT6L4JJg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+    <title>Job details</title>
+</head>
+<body>
+  <div class="main-content">
+    <section class="recruiter-section">
+        <nav class="recruiter-navigation" id="sidenavbar"></nav>
+        <div class="recruiter-main-container">
+            <header class="recruiter-header" id="recruiter_header"></header>
+            <div class="recruiter-content-container">
+                <% r3.forEach(job => { %>
+                <div class="details">
+                    <div class="left-column">
+                        <div class="card1">
+                            <h2><%= job.job_role %>
+                            <!-- <dueDate><%= job.due_date %></dueDate> -->
+                        </h2>
+                            <div class="job-tags">
+                                <span class="job-type"><i class="fa-solid fa-briefcase"></i> <%= job.job_type %></span>
+                                <span class="job-mode"><i class="fa-regular fa-building"></i> <%= job.work_mode %></span>
+                                <span class="experience"><i class="fa-solid fa-laptop"></i> <%= job.min_exp %>  - <%= job.max_exp %> yrs</span>
+                            </div>
+                            <div class="salary-location">
+                                <ul>
+                                    <li class="salary"><i class="fa-solid fa-dollar-sign"></i> <%= job.min_salary %>k - <%= job.max_salary %>k</li>
+                                    <li class="location"><i class="fa-solid fa-location-dot"></i> <%= job.city %></li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="card2">
+                            <h3>Description</h3>
+                            <p><%= job.job_desc %></p>
+                        </div>
+                    </div>
+                    <div class="right-column">
+                        <div class="card3">
+                            <h3>Job Requirements</h3>
+                            <div class="requirements">
+                                <div class="exp">
+                                    <strong>Experience : </strong>  <%= job.min_exp %> - <%= job.max_exp %> yrs
+                                </div>
+                                <div class="qualification">
+                                    <strong>Qualification : </strong>  <%= job.qualification %>
+                                </div>
+                                <div class="skills">
+                                    <strong>Skills :</strong>
+                                    <ul>
+                                        <div class="skill-card-row">
+                                            <% 
+                                                let color = ['#FF5EF9','#00BD40','#FF0000','#0897FF'];
+                                                let i = 0;
+                                                let background = ['rgba(246, 139, 255, 0.12)', 'rgba(0, 189, 64, 0.12)',  'rgba(255, 0, 0, 0.12)', 'rgba(8, 151, 255, 0.12)'];
+                                            %>
+                                            <% job.skills_req.split(',').forEach(element => { %>
+                                                <div class="skill-box" style="color: <%= color[i] %>; border : 2px solid <%= color[i] %>; background-color: <%= background[i] %>;" >
+                                                    <%= element %>
+                                                </div>
+                                                <% if (i === 3) { %>
+                                                    <% i = 0; %>
+                                                <% } else { %>
+                                                    <% i++; %>
+                                                <% } %>
+                                            <% }); %>  
+                                        </div>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <% }); %>
+            </div>  
+        </div>
+    </section>
+  </div>
+
+  <script type="text/babel" src="/PUBLIC/components/SideNavBar.js"></script>
+  <script type="text/babel" src="/PUBLIC/components/RecruiterHeader.js"></script>
+
+  <script type="text/babel">
+    const profilePic = "<%= profilePic %>";
+    const username = "<%= username %>";
+    console.log(profilePic);
+    ReactDOM.createRoot(document.getElementById('sidenavbar')).render(
+        <SideNavBar/>
+    );
+
+    ReactDOM.createRoot(document.getElementById('recruiter_header')).render(
+        <RecruiterHeader title='Job Details' profilePic={profilePic} username = {username} />
+    );
+    
+</script>
+</body>
+</html>

@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <link rel="icon" href="%PUBLIC_URL%/favicon.ico" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#000000" />
+    <meta
+      name="description"
+      content="Web site created using create-react-app"
+    />
+    <link rel="apple-touch-icon" href="%PUBLIC_URL%/logo192.png" />
+    <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
+    <link rel="stylesheet" href="/PUBLIC/CSS/applicant_style.css">
+    <link rel="stylesheet" href="/PUBLIC/CSS/style.css">
+    <script src="/function/Babel.js"></script>
+    <script src="/function/React.js"></script>
+    <script src="/function/ReactDOM.js"></script>
+
+    <link rel="shortcut icon" href="/PUBLIC/ASSETS/IMAGES/favicon.png" type="image/x-icon">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" integrity="sha512-Kc323vGBEqzTmouAECnVceyQqyqdsSiqLQISBL29aUW4U/M7pSPA/gEUZQqv1cwx4OnYxTxve5UMg5GT6L4JJg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+    <title>Everything.india | Home Page</title>
+  </head>
+  <body>
+      <!-- header section  -->
+    <header>
+      <div id="header-box">
+        <div class="header-container" id="header">       
+        </div>
+
+        <% if(isLogged != null && isLogged == true) { %>
+        <div class="profile-box">
+          <div class="notification-box" id="notification-bell">
+            <i class="fa-solid fa-bell"></i>
+            <% if(notiResult.length > 0) { %>
+              <div class="notification-indicator"></div>
+            <% } %>
+          </div>
+          <div class="profile-pic-div" id="profile-div">
+            <% if(profilePic == null){ %>
+              <img src="/PUBLIC/ASSETS/IMAGES/user.png" alt="profile-picture">
+            <% }else{ %>
+            <img src="/PUBLIC/ASSETS/UPLOADS/profile_images/<%= profilePic %>" alt="profile-picture">
+            <% } %>
+          </div>
+        </div>
+
+        <div class="dropdown-box hidden" id="drop-box">
+          <ul>
+            <li><a href="/jobSeeker/editprofile">Edit Profile</a></li>
+            <li><a href="/jobSeeker/changePassword">Change Password</a></li>
+            <li class="logout-btn"><a href="/jobSeeker/logout">Logout <i class="fa-solid fa-right-from-bracket"></i></a></li>
+          </ul>
+        </div>
+  
+        <!-- notification area -->
+        <div class="notification-detail-box hidden" id="notification-detail-box">
+          
+          <%if(notiResult.length > 0){%>
+          
+          <ul>
+  
+            <% notiResult.forEach(notification =>{ %>
+              <li class="notification">
+                <div class="notification-upper notification-slot">
+                  <h3><%= notification.job_role %></h3>
+                  <div class="company-logo-box">
+                    <img src="/PUBLIC/ASSETS/IMAGES/company_logos/<%= notification.company %>.png" alt="company-logo">
+                  </div>
+                </div>
+                <div class="notification-lower notification-slot">
+                  <p><span>Status:</span> <%= notification.application_status %></p>
+                  <a href="/jobSeeker/deleteNotification?jobid=<%= notification.job_id %>"><i class="fa-solid fa-trash"></i></a>
+                </div>
+            </li>
+            <%})%>
+            
+          </ul>
+  
+          <% }else{ %>
+            <h3 class="no-notification">No notifications yet</h3>
+          <% } %>
+        </div>
+        <!-- notification area -->
+
+        <% } else { %>
+          <div class="button-box" id="btn-box">
+            <a class='myBtn' href="/jobSeeker/login">Applicant</a>
+            <a class='myBtn' href="/jobCreator/login">Recruiter</a>
+          </div>
+        <% } %>
+        
+      </div>
+    </header>
+    <!-- header section ends here -->
+
+    <section class="edit-profile-section">
+        <div class="edit-profile-container">
+            <form action="/jobSeeker/updateprofile" method="POST" enctype="multipart/form-data">
+                <input type="hidden" name="applicant_id" value="<%= applicant.applicant_id %>">
+                <div class="edit-profile-grid1">
+                    <span class="applicant applicant-profile-box">
+                        <!-- <h4>Profile Photo</h4> -->
+                        <div class="profile-photo-container">
+                            <% if (applicant.profile_pic_code) { %>
+                                <div class="profile-pic-box" id="profile-div" >
+                                  <img src="/PUBLIC/ASSETS/UPLOADS/profile_images/<%= applicant.profile_pic_code %>" alt="Profile Photo" style="width: 150px; height: 160px; border-radius: 50%;">
+                                  <input type="text" name="profilePic" value="<%=applicant.profile_pic_code %>" hidden>
+                                  <a href="/jobseeker/deleteProfilePic?picName=<%=applicant.profile_pic_code%>" id="removeProfilePic"><i class="fa-solid fa-xmark"></i> </a>
+                                </div>
+                                
+                            <% } else { %>
+                              <div class="profilePhoto" id="profilePhoto">
+                                <input type="file" name="prof-image" id="fileInput" accept=".jpeg, .jpg"  hidden>
+                                <input type="text" name="profilePic" value="uploaded" hidden>
+                                <span class="uploadText"><i class="fa-solid fa-circle-plus"></i>
+                                    <p>Upload Photo</p>
+                                </span>
+                            </div>
+
+                            <!-- <input type="file" name="prof-image" id="fileInput" accept=".jpeg, .jpg"> -->
+                            <% } %>
+                        </div>
+                        <!-- <label for="fileInput" class="file-label">
+                            <i class="fas fa-pen"></i> Choose file
+                        </label> -->
+                        <!-- <input type="file" name="prof-image" id="fileInput" class="file-input" accept=".jpeg, .jpg"> -->
+                    </span>
+                    
+                    <span class="applicant">
+                        <h4>First Name</h4>
+                        <input type="text" class="data" id="first_name" name="first_name" value="<%= applicant.first_name %>">
+                    </span>
+                    <span class="applicant">
+                        <h4>Last Name</h4>
+                        <input type="text" class="data" id="last_name" name="last_name" value="<%= applicant.last_name %>">
+                    </span>
+                </div>
+
+                <div class="edit-profile-grid2">
+                    <span class="applicant">
+                        <h4>Age</h4>
+                        <input type="text" class="data" id="age" name="age" value="<%= applicant.age %>">
+                    </span>
+                    <span class="applicant">
+                        <h4>Mobile Number</h4>
+                        <input type="text" class="data" id="mobile_no" name="mobile_no" value="<%= applicant.mobile_no %>">
+                    </span>
+                    <span class="applicant">
+                        <h4>Email ID</h4>
+                        <input type="email" class="data_email" id="email_id" name="email_id" value="<%= applicant.email_id %>">
+                    </span>
+                    <span class="applicant">
+                        <h4>Username</h4>
+                        <input type="text" class="data" id="username" name="username" value="<%= applicant.username %>">
+                    </span>
+                </div>
+                <div class="edit-profile-grid1">
+                    <span class="applicant">
+                        <h4>Experience Level</h4>
+                        <input type="text" class="data" id="exp_level" name="exp_level" value="<%= applicant.exp_level %> years">
+                    </span>
+                    <span class="applicant">
+                        <h4>Skills</h4>
+                        <input type="text" class="data" id="skills" name="skills" value="<%= applicant.skills %>">
+                    </span>
+                    <span class="applicant">
+                        <h4>Gender</h4>
+                        <select id="gender" name="gender" class="data">
+                            <option value="Male" <%= applicant.gender === 'Male' ? 'selected' : '' %>>Male</option>
+                            <option value="Female" <%= applicant.gender === 'Female' ? 'selected' : '' %>>Female</option>
+                            <option value="Other" <%= applicant.gender === 'Other' ? 'selected' : '' %>>Other</option>
+                        </select>
+                    </span>
+                </div>
+                <div class="edit-profile-grid2">
+                    <span class="applicant">
+                        <h4>CV</h4>
+                        <% if (applicant.cv) { %>
+                            <a href="/PUBLIC/ASSETS/UPLOADS/cv_pdfs/<%= applicant.cv %>" target="_blank">View CV</a>
+                        <% } else { %>
+                            <p>No file chosen</p>
+                        <% } %>
+                        <label for="cv" class="file-label">
+                            <i class="fas fa-pen"></i> Edit
+                        </label>
+                        <input type="file" id="cv" name="prof-pdf" class="file-input" accept=".pdf,.doc,.docx">
+                    </span>
+                    <button type="submit">Update</button>
+                </div>
+            </form>
+        </div>
+    </section>  
+
+    <footer>
+      <div class="footerContainer" id="footer"></div>
+    </footer>
+
+
+    <!-- Embed the data in a script tag -->
+    
+    <script src="/PUBLIC/JS/script.js"></script>
+    
+    <script type="text/babel" src="/PUBLIC/COMPONENTS/Footer.js"></script>
+    <script type="text/babel" src="/PUBLIC/COMPONENTS/Header.js"></script>
+
+    <script type="text/babel">
+      ReactDOM.render(<Footer />, document.getElementById("footer"));
+      ReactDOM.render(<Header />, document.getElementById("header"));
+    </script>
+
+<script>
+  profilePhoto = document.getElementById('profilePhoto'),
+  fileInput = document.getElementById('fileInput'),
+  uploadText = profilePhoto.querySelector('.uploadText');
+
+  profilePhoto.addEventListener('click', () => fileInput.click());
+
+  fileInput.addEventListener('change', handleFile);
+
+  function handleFile(event) {
+      const file = event.target.files[0];
+      if (file) {
+          if (file.size > 1 * 1024 * 1024) {
+              alert('File size exceeds 1MB.');
+              fileInput.value = '';
+              return;
+          }
+          if (!file.type.match('image/jpeg')) {
+              alert('Only JPEG files are allowed.');
+              fileInput.value = '';
+              return;
+          }
+          const reader = new FileReader();
+          reader.onload = function(e) {
+              profilePhoto.style.backgroundImage = `url(${e.target.result})`;
+              uploadText.style.display = 'none';
+          }
+          reader.readAsDataURL(file);
+      }
+  }
+
+</script>
+  </body>
+</html>

@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/PUBLIC/CSS/recruiter_style.css">
+    <link rel="shortcut icon" href="/PUBLIC/ASSETS/IMAGES/favicon.png" type="image/x-icon">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" integrity="sha512-Kc323vGBEqzTmouAECnVceyQqyqdsSiqLQISBL29aUW4U/M7pSPA/gEUZQqv1cwx4OnYxTxve5UMg5GT6L4JJg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <title>Verify OTP | Everything.india</title>
+    <style>
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <section class="recruiter-form">
+        <div class="recruiter-from-image-container">
+            <div class="overlay-div"></div>
+        </div>
+        <main class="recruiter-form-container">
+            <header class="form-header">
+                <h1>Verify OTP</h1>
+                <p>Enter 4-digit otp received on your registered E-mail ID</p>
+            </header>
+            <div class="form-box">
+                <form action="/jobCreator/verifyotp" method="post">
+                    <div class="input-box-row">
+                        <div class="input-box otp-box">
+                            <input type="text" name="otp1" id="otp-1" maxlength="1">
+                        </div>
+                        <div class="input-box otp-box">
+                            <input type="text" name="otp2" id="otp-2" maxlength="1">
+                        </div>
+                        <div class="input-box otp-box">
+                            <input type="text" name="otp3" id="otp-3" maxlength="1">
+                        </div>
+                        <div class="input-box otp-box">
+                            <input type="text" name="otp4" id="otp-4" maxlength="1">
+                        </div>
+                    </div>
+                    
+                    <div class="form-link-box">
+                        <a href="/jobCreator/resend_otp" id="resend-otp" >Resend OTP</a>
+                        <p id="timer">00:15</p>
+                    </div>
+                    
+                    <button class="form-btn">verify</button>
+
+                    <p class="message"><%= errorMsg %></p>
+                </form>
+            </div>
+        </main>
+    </section>
+    
+    <script>
+        function startTimer(duration, display) {
+            let timer = duration, minutes, seconds;
+            const interval = setInterval(function () {
+                minutes = parseInt(timer / 60, 10);
+                seconds = parseInt(timer % 60, 10);
+
+                minutes = minutes < 10 ? "0" + minutes : minutes;
+                seconds = seconds < 10 ? "0" + seconds : seconds;
+
+                display.textContent = minutes + ":" + seconds;
+
+                if (--timer < 0) {
+                    clearInterval(interval);
+                    display.textContent = "00:00";
+                    document.getElementById('resend-otp').classList.remove('hidden');
+                    document.getElementById('timer').classList.add('hidden');
+                }
+            }, 1000);
+        }
+
+        window.onload = function () {
+            let timeLeft = 15; // 2 minutes and 59 seconds
+            const display = document.querySelector('#timer');
+            document.getElementById('resend-otp').classList.add('hidden'); // Hide Resend OTP link initially
+            startTimer(timeLeft, display);
+        };
+
+        document.getElementById('resend-otp').addEventListener('click', function(event) {
+            let timeLeft = 15; // 2 minutes and 59 seconds
+            const display = document.querySelector('#timer');
+            this.classList.add('hidden'); // Hide Resend OTP link on click
+            startTimer(timeLeft, display);
+            document.getElementById('timer').classList.remove('hidden');
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <script src="/function/Babel.js"></script>
+    <script src="/function/React.js"></script>
+    <script src="/function/ReactDOM.js"></script>
+    <link rel="shortcut icon" href="/PUBLIC/ASSETS/IMAGES/favicon.png" type="image/x-icon">
+    <link rel="stylesheet" href="/PUBLIC/css/recruiter_style.css">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" integrity="sha512-Kc323vGBEqzTmouAECnVceyQqyqdsSiqLQISBL29aUW4U/M7pSPA/gEUZQqv1cwx4OnYxTxve5UMg5GT6L4JJg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+
+    <script crossorigin src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+
+    <title>Recruiter Dashboard | Everything.india</title>
+    <style>
+        .profile-pic {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            margin: 0 auto;
+            background-color: #fff;
+            box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
+            object-fit: contain;
+        }
+        .details-form-content-box form .details-form-left .applicant_image {
+            height: 15rem;
+            width: 15rem;
+            border-radius: 50%;
+            box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+            object-fit: cover;
+        }
+    </style>
+</head>
+<body>
+    <section class="recruiter-section">
+        <nav class="recruiter-navigation" id="sidenavbar"></nav>
+        <div class="recruiter-main-container">
+            <header class="recruiter-header" id="recruiter_header"></header>
+            <div class="recruiter-application-container" id="application-container"></div>
+            <% if(toastNotification){ %>
+                <div id="toastBox"></div>
+              <% } %>
+            
+            <footer>
+                <div class="footerContainer" id="footer"></div>
+            </footer>
+        </div>
+    </section>
+
+    <script>
+        let toastBox = document.getElementById("toastBox");
+        let toastMsg = '<i class="fa-regular fa-square-check"></i><%=toastNotification%>' ;
+    
+        window.onload = function (msg) {
+          let toast = document.createElement("div");
+          toast.classList.add("toast");
+          toast.innerHTML = toastMsg;
+          toastBox.appendChild(toast);
+          setTimeout(() => {
+            toast.remove();
+          }, 6000);
+        };
+      </script>
+
+    <script type="text/babel" src="/PUBLIC/components/AdminSideNavBar.js"></script>
+    <script type="text/babel" src="/PUBLIC/components/RecruiterHeader.js"></script>
+    <script type="text/babel" src="/PUBLIC/COMPONENTS/RecruiterFooter.js"></script>
+
+    <script type="text/babel">
+        const profilePic = "<%= profilePic %>";
+        const username = "<%= username %>";
+        console.log('profile pic val: ' + profilePic);
+        console.log(profilePic);
+
+        const { useEffect, useState } = React;
+
+        function App() {
+            const [applicant, setApplicantList] = useState({
+                first_name: '',
+                last_name: '',
+                age: '',
+                mobile_no: '',
+                gender: '',
+                exp_level: '',
+                email_id: '',
+                password: '',
+                username: '',
+                profile_pic_code: ''
+            });
+            const [applicationList, setApplicationList] = useState([]);
+            const [currentPage, setCurrentPage] = useState(1);
+            const itemsPerPage = 5;
+
+            useEffect(() => {
+                fetchApplicantData();
+            }, []);
+
+            const fetchApplicantData = () => {
+                axios.get('https://main.everythingstore.in/admin/getApplicantData').then((response) => {
+                    const data = response.data.applicantList[0] || {};
+                    setApplicantList({
+                        first_name: data.first_name || '',
+                        last_name: data.last_name || '',
+                        age: data.age || '',
+                        mobile_no: data.mobile_no || '',
+                        gender: data.gender || '',
+                        exp_level: data.exp_level || '',
+                        email_id: data.email_id || '',
+                        password: data.password || '',
+                        username: data.username || '',
+                        profile_pic_code: data.profile_pic_code || ''
+                    });
+                    setApplicationList(response.data.applicationList);
+                }).catch((error) => {
+                    console.error("Error fetching data:", error);
+                });
+            };
+
+            const handleInputChange = (e) => {
+                const { name, value } = e.target;
+                setApplicantList((prevApplicant) => ({
+                    ...prevApplicant,
+                    [name]: value,
+                }));
+            };
+
+            const indexOfLastApplication = currentPage * itemsPerPage;
+            const indexOfFirstApplication = indexOfLastApplication - itemsPerPage;
+            const currentApplication = applicationList.slice(indexOfFirstApplication, indexOfLastApplication);
+
+            const totalPages = Math.ceil(applicationList.length / itemsPerPage);
+
+            const handlePageChange = (pageNumber) => {
+                setCurrentPage(pageNumber);
+            };
+
+            return (
+                <>
+                    <div className="details-form-container">
+                        <div className="details-form-title-box">
+                            <h2>Edit Applicant Details</h2>
+                        </div>
+                        <div className="details-form-content-box">
+                            <form action="/admin/updateApplicantDetails" method="post">
+                                <div className="details-form-left">
+                                    <div className="image-box">
+                                        <img src={`/PUBLIC/ASSETS/UPLOADS/profile_images/${applicant.profile_pic_code}`} alt="profile-pic" className="applicant_image" />
+                                    </div>
+                                </div>
+                                <div className="details-form-right">
+                                    <div className="detail-form-row">
+                                        <div className="detail-form-input-box">
+                                            <label htmlFor="first_name">First Name</label>
+                                            <input type="text" name="first_name" id="first_name" placeholder="First Name" value={applicant.first_name} onChange={handleInputChange} />
+                                        </div>
+                                        <div className="detail-form-input-box">
+                                            <label htmlFor="last_name">Last Name</label>
+                                            <input type="text" name="last_name" id="last_name" placeholder="Last Name" value={applicant.last_name} onChange={handleInputChange} />
+                                        </div>
+                                        <div className="detail-form-input-box">
+                                            <label htmlFor="age">Age</label>
+                                            <input type="number" name="age" id="age" placeholder="Age" value={applicant.age} onChange={handleInputChange} />
+                                        </div>
+                                    </div>
+                                    <div className="detail-form-row">
+                                        <div className="detail-form-input-box">
+                                            <label htmlFor="mobile_no">Phn No</label>
+                                            <input type="text" name="mobile_no" id="mobile_no" placeholder="Phone No" value={applicant.mobile_no} onChange={handleInputChange} />
+                                        </div>
+                                        <div className="detail-form-input-box">
+                                            <label htmlFor="gender">Gender</label>
+                                            <input type="text" name="gender" id="gender" placeholder="Gender" value={applicant.gender} onChange={handleInputChange} />
+                                        </div>
+                                        <div className="detail-form-input-box">
+                                            <label htmlFor="exp_level">Experience(yrs)</label>
+                                            <input type="number" name="exp_level" id="exp_level" placeholder="Experience Level" value={applicant.exp_level} onChange={handleInputChange} />
+                                        </div>
+                                    </div>
+                                    <div className="detail-form-row">
+                                        <div className="detail-form-input-box">
+                                            <label htmlFor="email_id">Email</label>
+                                            <input type="email" name="email_id" id="email_id" placeholder="Email ID" value={applicant.email_id} onChange={handleInputChange} />
+                                        </div>
+                                        <div className="detail-form-input-box">
+                                            <label htmlFor="password">Password</label>
+                                            <input type="password" name="password" id="password" placeholder="Password" onChange={handleInputChange} />
+                                            <i className="fa-solid fa-eye-slash"></i>
+                                        </div>
+                                    </div>
+                                    <div className="detail-form-row">
+                                        <div className="detail-form-input-box">
+                                            <label htmlFor="username">Username</label>
+                                            <input type="text" name="username" id="username" placeholder="Username" value={applicant.username} onChange={handleInputChange} />
+                                        </div>
+                                        <div className="dropbox_filter">
+                                            <select className="sel_box" id="sel_box" name="status" onChange={handleInputChange} value={applicant.status || ''}>
+                                                <option value="">Select a Status</option>
+                                                <option value="1">Active</option>
+                                                <option value="0">Inactive</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <button type="submit" className="update-btn">Update</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+
+                    <div className="table-box">
+                        <div className="table-container">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Job Role</th>
+                                        <th>City</th>
+                                        <th>Company</th>
+                                        <th>Status</th>
+                                        <th>Salary(Rs.)</th>
+                                        <th>Applied Date</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {currentApplication.map((application, index) => (
+                                        <tr key={index}>
+                                            <td>{application.job_role}</td>
+                                            <td>{application.city}</td>
+                                            <td>{application.company}</td>
+                                            <td>{application.application_status}</td>
+                                            <td>{application.min_salary} - {application.max_salary}</td>
+                                            <td>{application.applied_date.substring(0, 10).split("-").reverse().join("-")}</td>
+                                            <td className="deleteButton"><a href={`/admin/deleteApplication?application_id=${application.application_id}`}><i className="fa-solid fa-trash"></i></a></td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        </div>
+                        <div className="page-number-box">
+                            <h3>Pages</h3>
+                            <div className="pageNumberContent">
+                                {Array.from({ length: totalPages }, (_, index) => (
+                                    <div
+                                        key={index}
+                                        className={`pagenumber ${currentPage === index + 1 ? 'active' : ''}`}
+                                        onClick={() => handlePageChange(index + 1)}
+                                    >
+                                        {index + 1}
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    </div>
+                </>
+            );
+        }
+
+        ReactDOM.createRoot(document.getElementById('sidenavbar')).render(
+            <AdminSideNavBar />
+        );
+
+        ReactDOM.createRoot(document.getElementById('recruiter_header')).render(
+            <RecruiterHeader title='Admin Panel' profilePic={profilePic} username={username} />
+        );
+
+        ReactDOM.createRoot(document.getElementById('application-container')).render(
+            <App />
+        );
+
+        ReactDOM.render(<RecruiterFooter />, document.getElementById("footer"));
+
+    </script>
+</body>
+</html>

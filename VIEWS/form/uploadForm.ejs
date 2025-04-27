@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Registration Form</title>
+    <link rel="stylesheet" href="/public/css/style.css">
+    <link rel="shortcut icon" href="/public/assets/images/favicon.png" type="image/x-icon">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" integrity="sha512-Kc323vGBEqzTmouAECnVceyQqyqdsSiqLQISBL29aUW4U/M7pSPA/gEUZQqv1cwx4OnYxTxve5UMg5GT6L4JJg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+</head>
+<body>
+    <div class="container">
+        <div class="formsDiv">
+            <div class="leftContainer formContainer">
+                <img src="/public/assets/images/form_images/completedetail.png" alt="login-img" /> 
+            </div>
+            <div class="rightContainer formContainer">
+                <h1 class='formTitle'>Upload CV</h1>
+                <div class="formBox">
+                    <form action="/jobSeeker/uploadProfile" method="post" enctype="multipart/form-data">
+                         <!-- skill box start -->
+
+                        <input type="hidden" name="applicant_id" value="<%= pd.applicant_id %>">
+                        <input type="hidden" name="first_name" value="<%= pd.first_name %>">
+                        <input type="hidden" name="last_name" value="<%= pd.last_name %>">
+                        <input type="hidden" name="age" value="<%= pd.age %>">
+                        <input type="hidden" name="mobile_no" value="<%= pd.mobile_no %>">
+                        <input type="hidden" name="email_id" value="<%= pd.email_id %>">
+                        <input type="hidden" name="exp" value="<%= pd.exp %>">
+                        <input type="hidden" name="gender" value="<%= pd.gender %>">
+                        <input type="hidden" name="profile_pic_code" value="<%= pd.profile_pic_code %>">
+
+                    <div class="skill-wrapper">
+                        <div class="skill-title">
+                            <h2>Add Skills</h2>
+                        </div>
+                        <div class="skill-content">
+                            <div class="skill-tag-box">
+                                <ul>
+                                    <input type="text" name="skills" id="skills">
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="skill-details">
+                            <p><span id="skill-count"></span> tags remaining</p>
+                            <button id="remove-btn">Remove all</button>
+                        </div>
+                    </div>
+                    <!-- skill box ends  -->
+
+                    
+                    <!-- upload cv section -->
+                    <div class="upload-box" id="dropZone">
+                        <input type="file" id="fileInput" name="prof-pdf" accept=".pdf" hidden>
+                        <div class="upload-content">
+                            <span class="upload-icon" id="uploadIcon"><i class="fa-solid fa-file-arrow-up"></i></span>
+                            <p id="uploadText">Drag & Drop or Click to choose File</p>
+                            <p class="file-size-info">Max file size: 5MB</p>
+                        </div>
+                    </div>
+
+                    <button class='formButton' type="submit">submit</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const ul = document.querySelector('ul'),
+        input = ul.querySelector('input'),
+        span = document.getElementById('skill-count');
+
+        let skillBox = document.getElementById('skills');
+        let skillValue = "";
+
+        let count = 5;
+        span.innerText = count;
+
+        let tags = [];
+
+        function createTag() {
+            ul.querySelectorAll("li").forEach(li => li.remove());
+            tags.slice().reverse().forEach(tag => {
+                let liTag = `<li>${tag} <i class="fa-solid fa-xmark" onclick="remove(this, '${tag}')"></i></li>`;
+                ul.insertAdjacentHTML("afterbegin", liTag);
+            });
+
+            // Update skillValue and skillBox value
+            skillValue = tags.join(',');
+            skillBox.value = skillValue;  // Set the value attribute
+        }
+
+        function remove(element, tag) {
+            let index = tags.indexOf(tag);
+            tags = [...tags.slice(0, index), ...tags.slice(index + 1)];
+            element.parentElement.remove();
+            count++;
+            span.innerText = count;
+
+            // Update the tags and input value after removing a tag
+            createTag();
+        }
+
+        function addTag(e) {
+            if (e.key === " " && count > 0) { // Changed from Enter to Spacebar
+                e.preventDefault();
+                let tag = e.target.value.replace(/\s+/g, ' ').trim();
+                if (tag.length > 1 && !tags.includes(tag)) {
+                    tag.split(',').forEach(tag => {
+                        tags.push(tag);
+                        createTag();
+                        count--;
+                        span.innerText = count;
+                    });
+                }
+                e.target.value = "";
+            }
+        }
+
+        input.addEventListener("keyup", addTag);
+
+        const removeBtn = document.getElementById('remove-btn');
+        removeBtn.addEventListener('click', () => {
+            tags.length = 0;
+            ul.querySelectorAll("li").forEach(li => li.remove());
+            span.innerText = 5;
+            count = 5;
+
+            // Clear the input value when all tags are removed
+            skillBox.value = "";
+        });
+
+        // Make sure to set the skills value before submitting the form
+        const form = document.querySelector('form');
+        form.addEventListener('submit', (e) => {
+            skillBox.value = tags.join(','); // Ensure the input value is set
+        });
+
+
+
+
+        // for upload file
+        const dropZone = document.getElementById('dropZone');
+        const fileInput = document.getElementById('fileInput');
+        const uploadIcon = document.getElementById('uploadIcon');
+        const uploadText = document.getElementById('uploadText');
+
+        dropZone.addEventListener('click', () => fileInput.click());
+
+        fileInput.addEventListener('change', handleFile);
+
+        dropZone.addEventListener('dragover', (event) => {
+            event.preventDefault();
+            dropZone.classList.add('dragover');
+        });
+
+        dropZone.addEventListener('dragleave', () => {
+            dropZone.classList.remove('dragover');
+        });
+
+        dropZone.addEventListener('drop', (event) => {
+            event.preventDefault();
+            dropZone.classList.remove('dragover');
+            const files = event.dataTransfer.files;
+            if (files.length > 1) {
+                alert('You can only upload one file at a time.');
+                return;
+            }
+            if (files[0].type !== 'application/pdf') {
+                alert('Only PDF files are allowed.');
+                return;
+            }
+            if (files[0].size > 5 * 1024 * 1024) {
+                alert('File size exceeds 5MB.');
+                return;
+            }
+            handleFile({ target: { files } });
+        });
+
+        function handleFile(event) {
+            const file = event.target.files[0];
+            if (file) {
+                if (file.size > 5 * 1024 * 1024) {
+                    alert('File size exceeds 5MB.');
+                    fileInput.value = '';
+                    return;
+                }
+                if (file.type !== 'application/pdf') {
+                    alert('Only PDF files are allowed.');
+                    fileInput.value = '';
+                    return;
+                }
+                displayFile(file);
+            }
+        }
+
+        function displayFile(file) {
+            uploadIcon.style.display = 'none';
+            uploadText.innerText =`File: ${file.name}`;
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Select Your Role</title>
+    <link rel="shortcut icon" href="/PUBLIC/assets/images/favicon.png" type="image/x-icon">
+    <link rel="stylesheet" href="/PUBLIC/css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" integrity="sha512-Kc323vGBEqzTmouAECnVceyQqyqdsSiqLQISBL29aUW4U/M7pSPA/gEUZQqv1cwx4OnYxTxve5UMg5GT6L4JJg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <style>
+        /* Style remains the same */
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+        }
+        .container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background-color: #f8f9fa;
+        }
+        .formsDiv {
+            display: flex;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+            border-radius: 15px;
+            overflow: hidden;
+            width: 900px;
+            background-color: #fff;
+        }
+        .leftContainer {
+            flex: 1;
+            background-color: #f0f5ff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .leftContainer img {
+            max-width: 100%;
+            height: auto;
+        }
+        .rightContainer {
+            flex: 1;
+            padding: 40px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        .formTitle {
+            text-align: center;
+            color: #333;
+            margin-bottom: 30px;
+            font-size: 28px;
+        }
+        .formBox {
+            margin-bottom: 30px;
+        }
+        .role-selection {
+            margin-bottom: 20px;
+        }
+        .role-option {
+            display: block;
+            margin: 15px 0;
+            padding: 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 16px;
+            position: relative;
+        }
+        .role-option:hover {
+            border-color: #0EB5C4;
+            background-color: #f0f9fa;
+        }
+        .role-option.selected {
+            border-color: #0EB5C4;
+            background-color: #e6f7f8;
+        }
+        .role-option i {
+            margin-right: 10px;
+            color: #0EB5C4;
+        }
+        .formButton {
+            display: block;
+            width: 100%;
+            padding: 12px;
+            background-color: #0EB5C4;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            margin-top: 20px;
+        }
+        .formButton:hover {
+            background-color: #0a9aa7;
+        }
+        .formText {
+            text-align: center;
+            margin-top: 20px;
+            color: #666;
+        }
+        .formLink {
+            color: #0EB5C4;
+            text-decoration: none;
+            font-weight: bold;
+        }
+        .formLink:hover {
+            text-decoration: underline;
+        }
+    </style>
+  </head>
+  <body>
+    <div class="container" id="root">
+      <div class="formsDiv">
+        <div class="leftContainer formContainer">
+            <img src="/PUBLIC/assets/images/form_images/login.png" alt="role-selection-img" />
+        </div>
+        <div class="rightContainer formContainer">
+            <h1 class='formTitle'>Select Your Role</h1>
+            <div class="formBox">
+                <form id="roleForm" action="/jobSeeker/role_select" method="post">
+                    <div class="role-selection">
+                        <div class="role-option" data-role="applicant">
+                            <i class="fa-solid fa-user-graduate"></i> Job Applicant
+                        </div>
+                        <div class="role-option" data-role="recruiter">
+                            <i class="fa-solid fa-building"></i> Recruiter
+                        </div>
+                        <div class="role-option" data-role="buyer">
+                            <i class="fa-solid fa-cart-shopping"></i> Buyer
+                        </div>
+                        <div class="role-option" data-role="seller">
+                            <i class="fa-solid fa-store"></i> Seller
+                        </div>
+                    </div>
+                    <input type="hidden" id="selectedRole" name="role" value="">
+                    <button class='formButton' type="submit" id="continueBtn" disabled>Continue</button>
+                </form>
+            </div>
+            <div class="formText">
+                Already have an account? <a href="/jobSeeker/login"><span class='formLink'>Login</span></a>
+            </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+        // Get all role options
+        const roleOptions = document.querySelectorAll('.role-option');
+        const selectedRoleInput = document.getElementById('selectedRole');
+        const continueBtn = document.getElementById('continueBtn');
+        const roleForm = document.getElementById('roleForm');
+
+        // Add click event to each role option
+        roleOptions.forEach(option => {
+            option.addEventListener('click', function() {
+                // Remove selected class from all options
+                roleOptions.forEach(opt => opt.classList.remove('selected'));
+                
+                // Add selected class to clicked option
+                this.classList.add('selected');
+                
+                // Set the hidden input value
+                selectedRoleInput.value = this.dataset.role;
+                
+                // Enable the continue button
+                continueBtn.disabled = false;
+            });
+        });
+
+        // Add submit event handler to form
+        roleForm.addEventListener('submit', function(event) {
+            // Check if the selected role is "seller"
+            if (selectedRoleInput.value === "seller") {
+                // Prevent default form submission
+                event.preventDefault();
+                
+                // Get authentication token for seller application
+                fetch('/api/get-seller-token', {
+                    method: 'GET',
+                    credentials: 'include'
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Authentication failed');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    // Store the token in localStorage
+                    localStorage.setItem('authToken', data.token);
+                    
+                    // Redirect to seller application
+                    window.location.href = 'https://seller.everythingstore.in';
+                    // For local development you might use:
+                    // window.location.href = 'http://localhost:3002';
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Unable to access the seller portal. Please try again.');
+                });
+            }
+            // For other roles, let the form submit normally
+        });
+    </script>
+  </body>
+</html>
